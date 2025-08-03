@@ -30,6 +30,19 @@ public class LecturerService {
         return MapperUtil.toLecturerDTO(lecturer);
     }
 
+    public LecturerDTO login(Long id, String password) {
+        Lecturer lecturer = lecturerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Lecturer not found with id " + id));
+
+        if (!lecturer.getPassword().equals(password)) {
+
+            throw new IllegalArgumentException("Invalid credentials");
+        }
+
+        return MapperUtil.toLecturerDTO(lecturer);
+    }
+
+
     public LecturerDTO createLecturer(LecturerDTO dto) {
         Lecturer lecturer = MapperUtil.toLecturer(dto);
         return MapperUtil.toLecturerDTO(lecturerRepository.save(lecturer));
@@ -42,8 +55,6 @@ public class LecturerService {
         lecturer.setName(dto.getName());
         lecturer.setEmail(dto.getEmail());
         lecturer.setDepartment(dto.getDepartment());
-        lecturer.setStaffId(dto.getStaffId());
-        lecturer.setRank(dto.getRank());
 
         return MapperUtil.toLecturerDTO(lecturerRepository.save(lecturer));
     }

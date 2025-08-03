@@ -9,12 +9,10 @@ import lombok.*;
 public class Lecturer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private String email;
     private String department;
-    private String staffId;
-    private String rank;
+    private String password;
 }

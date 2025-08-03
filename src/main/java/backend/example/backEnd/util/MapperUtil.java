@@ -7,7 +7,6 @@ import backend.example.backEnd.model.Lecturer;
 
 public class MapperUtil {
 
-    // ==== Student Mappings ====
 
     public static StudentDTO toStudentDTO(Student student) {
         StudentDTO dto = new StudentDTO();
@@ -34,21 +33,21 @@ public class MapperUtil {
 
     public static LecturerDTO toLecturerDTO(Lecturer lecturer) {
         LecturerDTO dto = new LecturerDTO();
+        dto.setId(lecturer.getId());
         dto.setName(lecturer.getName());
         dto.setEmail(lecturer.getEmail());
         dto.setDepartment(lecturer.getDepartment());
-        dto.setStaffId(lecturer.getStaffId());
-        dto.setRank(lecturer.getRank());
+        dto.setPassword(String.valueOf(lecturer.getPassword()));
         return dto;
     }
 
     public static Lecturer toLecturer(LecturerDTO dto) {
         Lecturer lecturer = new Lecturer();
+        lecturer.setId(dto.getId());
         lecturer.setName(dto.getName());
         lecturer.setEmail(dto.getEmail());
         lecturer.setDepartment(dto.getDepartment());
-        lecturer.setStaffId(dto.getStaffId());
-        lecturer.setRank(dto.getRank());
+        lecturer.setPassword(String.valueOf(dto.getPassword()));
         return lecturer;
     }
 }
