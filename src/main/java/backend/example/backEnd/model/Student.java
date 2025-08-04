@@ -3,13 +3,14 @@ package backend.example.backEnd.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Student {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String  name;
@@ -18,6 +19,9 @@ public class Student {
     private String programme;
     private String indexNumber;
     private Double feesPaid;
+    @OneToMany(mappedBy = "student")
+    private List<Enrollment> enrollments;
+
 
 
 }

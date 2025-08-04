@@ -1,0 +1,156 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red21\green21\blue22;\red69\green73\blue76;\red228\green234\blue244;
+\red236\green241\blue247;}
+{\*\expandedcolortbl;;\cssrgb\c10588\c10980\c11373;\cssrgb\c34118\c35686\c37255;\cssrgb\c91373\c93333\c96471;
+\cssrgb\c94118\c95686\c97647;}
+\margl1440\margr1440\vieww38200\viewh20900\viewkind0
+\deftab720
+\pard\pardeftab720\sa320\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Sure, here is the MVP for your MIS Web backend using Java Spring Boot, formatted as a \cf3 \cb4 \strokec3 .txt\cf2 \cb1 \strokec2  file.\
+This \cf3 \cb4 \strokec3 .txt\cf2 \cb1 \strokec2  file provides a concise summary of the project setup, dependencies, database configuration, and the core components/functionalities for your MVP.\
+\pard\pardeftab720\partightenfactor0
+
+\fs28 \cf3 \cb5 \strokec3 MIS WEB BACKEND MVP - JAVA SPRING BOOT PROJECT OUTLINE\
+\
+=======================================================\
+PROJECT GOAL:\
+A foundational backend for an MIS Web portal where students can log in, view their profile, see available courses, manage their course registrations (enrollments), and view their grades. A basic admin/staff user will be needed to populate initial data.\
+\
+-------------------------------------------------------\
+1. PROJECT SETUP & INITIAL CONFIGURATION\
+-------------------------------------------------------\
+\
+   A. PROJECT CREATION (via Spring Initializr: start.spring.io)\
+      - Project: Maven Project\
+      - Language: Java\
+      - Spring Boot: Latest Stable (e.g., 3.3.2+)\
+      - Java: 17 (or 21)\
+      - Group: com.ug\
+      - Artifact: misweb-backend\
+      - Name: misweb-backend\
+      - Description: MIS Web Backend MVP\
+      - Package Name: com.ug.misweb\
+\
+   B. INITIAL DEPENDENCIES (in pom.xml)\
+      - spring-boot-starter-web\
+      - spring-boot-starter-data-jpa\
+      - postgresql (for PostgreSQL JDBC driver)\
+      - spring-boot-starter-security\
+      - lombok\
+      - spring-boot-starter-validation\
+      - spring-boot-devtools (optional, for fast restarts)\
+      - spring-boot-starter-test (for testing)\
+      - spring-security-test (for testing security)\
+\
+   C. MANUAL JWT DEPENDENCIES (add to pom.xml)\
+      - io.jsonwebtoken:jjwt-api:<latest-version> (e.g., 0.12.5)\
+      - io.jsonwebtoken:jjwt-impl:<latest-version> (scope: runtime)\
+      - io.jsonwebtoken:jjwt-jackson:<latest-version> (scope: runtime)\
+\
+   D. APPLICATION PROPERTIES (src/main/resources/application.properties)\
+      # Server Port\
+      server.port=8080\
+\
+      # PostgreSQL Database Configuration\
+      spring.datasource.url=jdbc:postgresql://localhost:5432/your_database_name\
+      spring.datasource.username=your_db_username\
+      spring.datasource.password=your_db_password\
+      spring.datasource.driver-class-name=org.postgresql.Driver\
+\
+      # JPA/Hibernate Configuration\
+      spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect\
+      spring.jpa.hibernate.ddl-auto=update # CAUTION: Use 'validate' or 'none' in production\
+      spring.jpa.show-sql=true\
+      spring.jpa.properties.hibernate.format_sql=true\
+\
+      # Logging (Optional)\
+      logging.level.org.springframework=INFO\
+      logging.level.com.ug.misweb=DEBUG\
+\
+-------------------------------------------------------\
+2. CORE PROJECT STRUCTURE (Inside com.ug.misweb package)\
+-------------------------------------------------------\
+\
+   - com.ug.misweb.MiswebBackendApplication.java (Main Spring Boot app class)\
+   - com.ug.misweb.config/         (Spring Security, JWT config)\
+   - com.ug.misweb.controller/     (REST API Endpoints)\
+   - com.ug.misweb.dto/            (Data Transfer Objects for requests/responses)\
+   - com.ug.misweb.exception/      (Custom exceptions, global error handler)\
+   - com.ug.misweb.model/          (JPA Entities - database models)\
+   - com.ug.misweb.repository/     (Spring Data JPA Repositories)\
+   - com.ug.misweb.service/        (Business Logic)\
+   - com.ug.misweb.util/           (Utility classes like JwtTokenProvider)\
+\
+-------------------------------------------------------\
+3. MVP CORE ENTITIES (in com.ug.misweb.model package)\
+-------------------------------------------------------\
+\
+   - User: id, username, password (hashed), role (STUDENT, ADMIN), enabled\
+   - Student: id, userId (FK to User), firstName, lastName, email, admissionNumber, dateOfBirth, department\
+   - Course: id, courseCode, courseTitle, credits, description, semester\
+   - Enrollment: id, studentId (FK to Student), courseId (FK to Course), enrollmentDate, grade\
+\
+-------------------------------------------------------\
+4. MVP CORE FUNCTIONALITIES & REST ENDPOINTS\
+-------------------------------------------------------\
+\
+   A. AUTHENTICATION & USER MANAGEMENT\
+      - POST /api/auth/login: User login (returns JWT token)\
+      - POST /api/auth/register: (Admin-only) Register new student/admin user\
+      - POST /api/auth/reset-password: Initiate password reset (basic impl. for MVP)\
+      - GET /api/users/me: Get current authenticated user's details\
+\
+   B. STUDENT PROFILE MANAGEMENT (for Students)\
+      - GET /api/students/\{id\}: Get a student's profile (allow 'me' for logged-in student)\
+      - PUT /api/students/\{id\}: Update a student's basic profile (allow 'me')\
+\
+   C. COURSE CATALOG (for Students)\
+      - GET /api/courses: List all available courses\
+      - GET /api/courses/\{id\}: Get details of a specific course\
+\
+   D. ENROLLMENT MANAGEMENT (for Students)\
+      - GET /api/students/\{studentId\}/enrollments: View courses student is enrolled in\
+      - POST /api/students/\{studentId\}/enrollments: Enroll a student in a course\
+      - DELETE /api/students/\{studentId\}/enrollments/\{enrollmentId\}: Drop a course\
+\
+   E. GRADES (for Students)\
+      - GET /api/students/\{studentId\}/grades: View all grades for a specific student\
+\
+   F. ADMIN/STAFF ENDPOINTS (for Data Population/Manipulation)\
+      - POST /api/admin/students: Create a new student\
+      - PUT /api/admin/students/\{id\}: Update a student's details\
+      - POST /api/admin/courses: Create a new course\
+      - PUT /api/admin/courses/\{id\}: Update a course\
+      - PUT /api/admin/enrollments/\{enrollmentId\}/grade: Assign/update a grade for an enrollment\
+      (NOTE: All admin endpoints must be secured with @PreAuthorize("hasRole('ADMIN')"))\
+\
+-------------------------------------------------------\
+5. KEY IMPLEMENTATION DETAILS\
+-------------------------------------------------------\
+\
+   - Spring Security: For authentication (JWT) and authorization (Role-Based Access Control).\
+   - JWT: For stateless token-based authentication.\
+   - Spring Data JPA: For database interactions (CRUD operations).\
+   - Validation: Using Jakarta Bean Validation (@NotBlank, @Email, @Size etc.) on DTOs.\
+   - Global Exception Handling: Using @ControllerAdvice to return consistent error responses.\
+   - Logging: Basic setup via application.properties.\
+   - Testing: Basic unit and integration tests.\
+\
+-------------------------------------------------------\
+6. EXCLUSIONS FROM MVP (for Future Phases)\
+-------------------------------------------------------\
+\
+   - Complex search/filtering.\
+   - User interfaces (this is backend-only).\
+   - Actual email sending for password resets.\
+   - File uploads.\
+   - Batch operations.\
+   - Notifications.\
+   - Financial/Fees, Library, Timetabling, complex reporting modules.\
+   - Detailed staff/faculty profiles and specific functionalities.\
+\
+=======================================================\
+}
