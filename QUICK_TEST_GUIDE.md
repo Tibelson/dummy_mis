@@ -297,4 +297,3 @@ cd mis-frontend && npm run dev
 4. **Test the connection** between frontend and backend
 5. **Build your UI components** using the API data
 
-Your backend is now fully prepared to work with any frontend framework! The CORS configuration allows communication from common frontend development ports, and all API endpoints are ready to use. 🚀 
