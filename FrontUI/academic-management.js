@@ -160,7 +160,7 @@ async function loadEnrollments() {
         // Get all enrollments by checking each student
         for (const student of students) {
             try {
-                const enrollments = await api.getEnrollments(student.id);
+                const enrollments = await api.getEnrollments(student.id || student.studentId);
                 if (enrollments && enrollments.length > 0) {
                     enrollments.forEach(enrollment => {
                         const course = courses.find(c => c.id === enrollment.courseId);
@@ -234,7 +234,7 @@ async function loadGrades() {
         // Load grades from enrollments
         for (const student of students) {
             try {
-                const enrollments = await api.getEnrollments(student.id);
+                const enrollments = await api.getEnrollments(student.id || student.studentId);
                 if (enrollments && enrollments.length > 0) {
                     enrollments.forEach(enrollment => {
                         const course = courses.find(c => c.id === enrollment.courseId);

@@ -608,7 +608,7 @@ const ui = {
         try {
             ui.showLoading();
 
-            const lecturerCourses = await api.getLecturerCourses(currentUser?.id).catch(() => []);
+            const lecturerCourses = await api.getLecturerCourses(currentUser?.lecturerId || currentUser?.id).catch(() => []);
 
             const container = document.getElementById('lecturerCoursesGrid');
             if (lecturerCourses.length === 0) {
@@ -658,7 +658,7 @@ const ui = {
         try {
             ui.showLoading();
 
-            const lecturerCourses = await api.getLecturerCourses(currentUser?.id).catch(() => []);
+            const lecturerCourses = await api.getLecturerCourses(currentUser?.lecturerId || currentUser?.id).catch(() => []);
             const allStudents = [];
             
             lecturerCourses.forEach(course => {
@@ -721,7 +721,7 @@ const ui = {
         try {
             ui.showLoading();
 
-            const lecturerCourses = await api.getLecturerCourses(currentUser?.id).catch(() => []);
+            const lecturerCourses = await api.getLecturerCourses(currentUser?.lecturerId || currentUser?.id).catch(() => []);
             const courseSelect = document.getElementById('gradeCourseSelect');
             
             courseSelect.innerHTML = '<option value="">Select a course to manage grades</option>' + 

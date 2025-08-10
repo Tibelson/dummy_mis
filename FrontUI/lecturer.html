@@ -7,6 +7,7 @@
       <link href="./dist/output.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="styles.css" rel="stylesheet">
+  <link href="global-fixes.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
   <nav class="bg-white shadow-lg border-b border-gray-200">
@@ -82,9 +83,9 @@
     async function init(){
       checkAuth();
       const user = JSON.parse(localStorage.getItem('user')||'null');
-      state.lecturerId = user?.id || 1;
+      state.lecturerId = user?.lecturerId || 1;
 
-      state.courses = await api.getLecturerCourses(state.lecturerId).catch(()=>[]);
+      state.courses = await api.getLecturerCourses(state.lecturerId || 1).catch(()=>[]);
 
       // Stats
       document.getElementById('statCourses').textContent = state.courses.length;

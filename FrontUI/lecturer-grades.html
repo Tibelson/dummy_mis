@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Management - MIS Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="styles-modern.css" rel="stylesheet">
+    <link href="global-fixes.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">MIS Web</h1>
+                            <p class="text-xs text-gray-600">Grade Management</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="welcomeMessage" class="text-gray-700 font-medium"></span>
+                    <button onclick="goBack()" class="btn-glass text-indigo-600 hover:text-indigo-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </button>
+                    <button onclick="logout()" class="btn-glass text-red-600 hover:text-red-700">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Grade Management</h2>
+            <p class="text-gray-600">Manage grades for students in your courses</p>
+        </div>
+
+        <!-- Course Selection -->
+        <div class="mb-6">
+            <label for="courseSelect" class="block text-sm font-medium text-gray-700 mb-2">Select Course:</label>
+            <select id="courseSelect" class="form-input w-full max-w-md" onchange="loadCourseStudents()">
+                <option value="">Choose a course...</option>
+            </select>
+        </div>
+
+        <!-- Students and Grades -->
+        <div id="studentsContainer" class="space-y-4">
+            <!-- Students will be populated here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script>
+        let currentUser = null;
+        let lecturerCourses = [];
+        let currentCourseStudents = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+
+        async function initializePage() {
+            try {
+                // Check authentication
+                const token = localStorage.getItem('token');
+                const role = localStorage.getItem('userRole');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                if (!token || role !== 'LECTURER') {
+                    window.location.href = 'home.html';
+                    return;
+                }
+                
+                currentUser = user;
+                document.getElementById('welcomeMessage').textContent = `Welcome, Dr. ${currentUser.lastName || 'Lecturer'}!`;
+                
+                // Load lecturer courses
+                await loadLecturerCourses();
+                
+            } catch (error) {
+                console.error('Page initialization error:', error);
+                showNotification('Failed to initialize page', 'error');
+            }
+        }
+
+        async function loadLecturerCourses() {
+            try {
+                showLoading(true);
+                
+                const lecturerId = currentUser.lecturerId || currentUser.id;
+                lecturerCourses = await api.getLecturerCourses(lecturerId);
+                
+                // Populate course select
+                const courseSelect = document.getElementById('courseSelect');
+                courseSelect.innerHTML = '<option value="">Choose a course...</option>' + 
+                    lecturerCourses.map(course => 
+                        `<option value="${course.id}">${course.courseCode} - ${course.courseTitle}</option>`
+                    ).join('');
+                
+            } catch (error) {
+                console.error('Failed to load lecturer courses:', error);
+                showNotification('Failed to load courses', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadCourseStudents() {
+            const courseId = document.getElementById('courseSelect').value;
+            if (!courseId) {
+                document.getElementById('studentsContainer').innerHTML = '';
+                return;
+            }
+
+            try {
+                showLoading(true);
+                
+                // Get all students and their enrollments for this course
+                const students = await api.getStudents();
+                const courseStudents = [];
+                
+                for (const student of students) {
+                    const enrollments = await api.getEnrollments(student.id || student.studentId);
+                    const enrollment = enrollments.find(e => e.courseId == courseId);
+                    
+                    if (enrollment) {
+                        courseStudents.push({
+                            student: student,
+                            enrollment: enrollment
+                        });
+                    }
+                }
+                
+                currentCourseStudents = courseStudents;
+                renderStudents();
+                
+            } catch (error) {
+                console.error('Failed to load course students:', error);
+                showNotification('Failed to load students', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderStudents() {
+            const container = document.getElementById('studentsContainer');
+            
+            if (currentCourseStudents.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <i class="fas fa-users text-gray-400 text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No students enrolled</h3>
+                        <p class="text-gray-500">No students are currently enrolled in this course.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = currentCourseStudents.map(({ student, enrollment }) => `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">${student.firstName} ${student.lastName}</h3>
+                                <p class="text-gray-600">${student.email}</p>
+                                <p class="text-sm text-gray-500">ID: ${student.admissionNumber}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-4">
+                            <div class="text-right">
+                                <p class="text-sm text-gray-500">Current Grade:</p>
+                                <p class="text-lg font-semibold ${enrollment.grade ? 'text-green-600' : 'text-gray-400'}">
+                                    ${enrollment.grade || 'Not Assigned'}
+                                </p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <select id="grade_${enrollment.id}" class="form-input w-20">
+                                    <option value="">-</option>
+                                    <option value="A+" ${enrollment.grade === 'A+' ? 'selected' : ''}>A+</option>
+                                    <option value="A" ${enrollment.grade === 'A' ? 'selected' : ''}>A</option>
+                                    <option value="A-" ${enrollment.grade === 'A-' ? 'selected' : ''}>A-</option>
+                                    <option value="B+" ${enrollment.grade === 'B+' ? 'selected' : ''}>B+</option>
+                                    <option value="B" ${enrollment.grade === 'B' ? 'selected' : ''}>B</option>
+                                    <option value="B-" ${enrollment.grade === 'B-' ? 'selected' : ''}>B-</option>
+                                    <option value="C+" ${enrollment.grade === 'C+' ? 'selected' : ''}>C+</option>
+                                    <option value="C" ${enrollment.grade === 'C' ? 'selected' : ''}>C</option>
+                                    <option value="C-" ${enrollment.grade === 'C-' ? 'selected' : ''}>C-</option>
+                                    <option value="D+" ${enrollment.grade === 'D+' ? 'selected' : ''}>D+</option>
+                                    <option value="D" ${enrollment.grade === 'D' ? 'selected' : ''}>D</option>
+                                    <option value="F" ${enrollment.grade === 'F' ? 'selected' : ''}>F</option>
+                                </select>
+                                <button onclick="saveGrade(${enrollment.id})" class="btn-glass bg-green-600 text-white hover:bg-green-700">
+                                    <i class="fas fa-save mr-1"></i>Save
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function saveGrade(enrollmentId) {
+            const gradeSelect = document.getElementById(`grade_${enrollmentId}`);
+            const grade = gradeSelect.value;
+            
+            if (!grade) {
+                showNotification('Please select a grade', 'error');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                await api.assignGrade(enrollmentId, grade);
+                
+                showNotification('Grade saved successfully!', 'success');
+                
+                // Reload students to update the display
+                await loadCourseStudents();
+                
+            } catch (error) {
+                console.error('Save grade error:', error);
+                showNotification('Failed to save grade: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function goBack() {
+            window.location.href = 'dashboard-unified.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('user');
+            localStorage.removeItem('selectedRole');
+            window.location.href = 'home.html';
+        }
+
+        function showLoading(show) {
+            if (show) {
+                document.body.style.cursor = 'wait';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' :
+                        type === 'error' ? 'fa-exclamation-circle' :
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

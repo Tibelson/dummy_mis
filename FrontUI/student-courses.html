@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Catalog - MIS Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="styles-modern.css" rel="stylesheet">
+    <link href="global-fixes.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">MIS Web</h1>
+                            <p class="text-xs text-gray-600">Course Catalog</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="welcomeMessage" class="text-gray-700 font-medium"></span>
+                    <button onclick="goBack()" class="btn-glass text-indigo-600 hover:text-indigo-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                    </button>
+                    <button onclick="logout()" class="btn-glass text-red-600 hover:text-red-700">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-2">Course Catalog</h2>
+            <p class="text-gray-600">Browse available courses and enroll in the ones that interest you</p>
+        </div>
+
+        <!-- Course Grid -->
+        <div id="courseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Courses will be populated here -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script>
+        let currentUser = null;
+        let availableCourses = [];
+        let enrolledCourses = [];
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+
+        async function initializePage() {
+            try {
+                // Check authentication
+                const token = localStorage.getItem('token');
+                const role = localStorage.getItem('userRole');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                if (!token || role !== 'STUDENT') {
+                    window.location.href = 'home.html';
+                    return;
+                }
+                
+                currentUser = user;
+                document.getElementById('welcomeMessage').textContent = `Welcome, ${currentUser.firstName || 'Student'}!`;
+                
+                // Load courses
+                await loadCourses();
+                
+            } catch (error) {
+                console.error('Page initialization error:', error);
+                showNotification('Failed to initialize page', 'error');
+            }
+        }
+
+        async function loadCourses() {
+            try {
+                showLoading(true);
+                
+                // Load all available courses
+                availableCourses = await api.getCourses();
+                
+                // Load student's enrollments
+                const enrollments = await api.getEnrollments(currentUser.studentId || currentUser.id);
+                enrolledCourses = enrollments.map(e => e.courseId);
+                
+                // Render courses
+                renderCourses();
+                
+            } catch (error) {
+                console.error('Failed to load courses:', error);
+                showNotification('Failed to load courses', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function renderCourses() {
+            const courseGrid = document.getElementById('courseGrid');
+            
+            if (availableCourses.length === 0) {
+                courseGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <i class="fas fa-book text-gray-400 text-4xl mb-4"></i>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No courses available</h3>
+                        <p class="text-gray-500">There are no courses available for enrollment at this time.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            courseGrid.innerHTML = availableCourses.map(course => {
+                const isEnrolled = enrolledCourses.includes(course.id);
+                const hasLecturer = course.lecturerId && course.lecturerName;
+                
+                return `
+                    <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-book text-white text-xl"></i>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium ${
+                                isEnrolled ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                            }">
+                                ${isEnrolled ? 'Enrolled' : 'Available'}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">${course.courseTitle}</h3>
+                        <p class="text-blue-600 font-medium mb-2">${course.courseCode}</p>
+                        <p class="text-gray-600 mb-4">${course.description || 'No description available'}</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Credits:</span>
+                                <span class="font-medium">${course.credits}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Semester:</span>
+                                <span class="font-medium">${course.semester}</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-500">Lecturer:</span>
+                                <span class="font-medium">${hasLecturer ? course.lecturerName : 'TBA'}</span>
+                            </div>
+                        </div>
+                        
+                        <button onclick="${isEnrolled ? 'dropCourse' : 'enrollCourse'}(${course.id})" 
+                                class="w-full btn-glass ${
+                                    isEnrolled 
+                                        ? 'bg-red-600 text-white hover:bg-red-700' 
+                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                }">
+                            <i class="fas ${isEnrolled ? 'fa-times' : 'fa-plus'} mr-2"></i>
+                            ${isEnrolled ? 'Drop Course' : 'Enroll'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function enrollCourse(courseId) {
+            try {
+                showLoading(true);
+                
+                await api.enrollStudent(currentUser.studentId || currentUser.id, courseId);
+                
+                showNotification('Successfully enrolled in course!', 'success');
+                
+                // Reload courses to update enrollment status
+                await loadCourses();
+                
+            } catch (error) {
+                console.error('Enrollment error:', error);
+                showNotification('Failed to enroll in course: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function dropCourse(courseId) {
+            if (!confirm('Are you sure you want to drop this course?')) {
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                // Find the enrollment ID for this course
+                const enrollments = await api.getEnrollments(currentUser.studentId || currentUser.id);
+                const enrollment = enrollments.find(e => e.courseId === courseId);
+                
+                if (enrollment) {
+                    await api.dropEnrollment(currentUser.studentId || currentUser.id, enrollment.id);
+                    showNotification('Successfully dropped course!', 'success');
+                    
+                    // Reload courses to update enrollment status
+                    await loadCourses();
+                } else {
+                    showNotification('Enrollment not found', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Drop course error:', error);
+                showNotification('Failed to drop course: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function goBack() {
+            window.location.href = 'dashboard-unified.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('user');
+            localStorage.removeItem('selectedRole');
+            window.location.href = 'home.html';
+        }
+
+        function showLoading(show) {
+            if (show) {
+                document.body.style.cursor = 'wait';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' :
+                        type === 'error' ? 'fa-exclamation-circle' :
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

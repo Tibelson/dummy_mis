@@ -28,10 +28,27 @@
   box-sizing: border-box;
 }
 
+/* Force all text to be black */
+* {
+  color: #000000 !important;
+}
+
+/* Ensure button text is visible */
+button, .btn-primary, .btn-secondary, .btn-outline {
+  color: inherit !important;
+  overflow: visible !important;
+}
+
+button span, .btn-primary span, .btn-secondary span, .btn-outline span {
+  color: inherit !important;
+  display: inline !important;
+  visibility: visible !important;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
-  color: var(--gray-900);
+  color: #000000 !important;
   background: var(--white);
   min-height: 100vh;
 }
@@ -56,7 +73,7 @@ body {
 .card-title {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--gray-600);
+  color: #000000 !important;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 0.5rem;
@@ -65,7 +82,7 @@ body {
 /* Modern Button Styles */
 .btn-primary {
   background: var(--primary-blue);
-  color: var(--white);
+  color: var(--white) !important;
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -75,7 +92,7 @@ body {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: var(--shadow-md);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .btn-primary:hover {
@@ -90,7 +107,7 @@ body {
 
 .btn-secondary {
   background: var(--white);
-  color: var(--primary-blue);
+  color: var(--primary-blue) !important;
   padding: 0.75rem 1.5rem;
   border: 2px solid var(--primary-blue);
   border-radius: 8px;

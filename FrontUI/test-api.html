@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test - MIS Web</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>MIS Web API Test</h1>
+    <div id="results"></div>
+    
+    <button onclick="testCourses()">Test Courses API</button>
+    <button onclick="testStudents()">Test Students API</button>
+    <button onclick="testLecturers()">Test Lecturers API</button>
+    <button onclick="testLogin()">Test Login API</button>
+    <button onclick="testDashboardStats()">Test Dashboard Stats</button>
+    <button onclick="testCreateCourse()">Test Create Course</button>
+    <button onclick="testCreateStudent()">Test Create Student</button>
+    <button onclick="testCreateLecturer()">Test Create Lecturer</button>
+    <button onclick="testAssignLecturer()">Test Assign Lecturer</button>
+    <button onclick="testAssignGrade()">Test Assign Grade</button>
+
+    <script src="api.js"></script>
+    <script>
+        function addResult(message, isSuccess = true) {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `test-result ${isSuccess ? 'success' : 'error'}`;
+            div.textContent = message;
+            results.appendChild(div);
+        }
+
+        async function testCourses() {
+            try {
+                const courses = await api.getCourses();
+                addResult(`✅ Courses API: Found ${courses.length} courses`);
+            } catch (error) {
+                addResult(`❌ Courses API Error: ${error.message}`, false);
+            }
+        }
+
+        async function testStudents() {
+            try {
+                const students = await api.getStudents();
+                addResult(`✅ Students API: Found ${students.length} students`);
+            } catch (error) {
+                addResult(`❌ Students API Error: ${error.message}`, false);
+            }
+        }
+
+        async function testLecturers() {
+            try {
+                const lecturers = await api.getLecturers();
+                addResult(`✅ Lecturers API: Found ${lecturers.length} lecturers`);
+            } catch (error) {
+                addResult(`❌ Lecturers API Error: ${error.message}`, false);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const response = await api.login({ username: 'admin', password: 'admin123' });
+                addResult(`✅ Login API: Success - Role: ${response.userDetails.role}`);
+            } catch (error) {
+                addResult(`❌ Login API Error: ${error.message}`, false);
+            }
+        }
+
+        async function testDashboardStats() {
+            try {
+                const stats = await api.getDashboardStats();
+                addResult(`✅ Dashboard Stats: Students: ${stats.totalStudents}, Courses: ${stats.totalCourses}, Lecturers: ${stats.totalLecturers}`);
+            } catch (error) {
+                addResult(`❌ Dashboard Stats Error: ${error.message}`, false);
+            }
+        }
+
+        async function testCreateCourse() {
+            try {
+                const courseData = {
+                    courseCode: 'TEST101',
+                    courseTitle: 'Test Course',
+                    credits: 3,
+                    description: 'Test course for API testing',
+                    semester: 'Fall 2024'
+                };
+                const course = await api.createCourse(courseData);
+                addResult(`✅ Create Course: Success - ID: ${course.id}`);
+            } catch (error) {
+                addResult(`❌ Create Course Error: ${error.message}`, false);
+            }
+        }
+
+        async function testCreateStudent() {
+            try {
+                const studentData = {
+                    firstName: 'Test',
+                    lastName: 'Student',
+                    email: 'test.student@test.com',
+                    admissionNumber: 'TEST001',
+                    dateOfBirth: '2000-01-01',
+                    department: 'Computer Science'
+                };
+                const student = await api.createStudent(studentData);
+                addResult(`✅ Create Student: Success - ID: ${student.id}`);
+            } catch (error) {
+                addResult(`❌ Create Student Error: ${error.message}`, false);
+            }
+        }
+
+        async function testCreateLecturer() {
+            try {
+                const lecturerData = {
+                    firstName: 'Test',
+                    lastName: 'Lecturer',
+                    email: 'test.lecturer@test.com',
+                    employeeNumber: 'TEST001',
+                    department: 'Computer Science',
+                    specialization: 'Testing',
+                    phoneNumber: '1234567890',
+                    hireDate: '2024-01-01'
+                };
+                const lecturer = await api.createLecturer(lecturerData);
+                addResult(`✅ Create Lecturer: Success - ID: ${lecturer.id}`);
+            } catch (error) {
+                addResult(`❌ Create Lecturer Error: ${error.message}`, false);
+            }
+        }
+
+        async function testAssignLecturer() {
+            try {
+                const course = await api.assignLecturerToCourseAdmin(2, 1);
+                addResult(`✅ Assign Lecturer: Success - Course: ${course.courseTitle}, Lecturer: ${course.lecturerName}`);
+            } catch (error) {
+                addResult(`❌ Assign Lecturer Error: ${error.message}`, false);
+            }
+        }
+
+        async function testAssignGrade() {
+            try {
+                await api.assignGrade(1, 'A');
+                addResult(`✅ Assign Grade: Success - Grade A assigned to enrollment 1`);
+            } catch (error) {
+                addResult(`❌ Assign Grade Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html>

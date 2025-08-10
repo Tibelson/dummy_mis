@@ -6,6 +6,7 @@
     <title>Dashboard - MIS Web</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="styles-modern.css" rel="stylesheet">
+    <link href="global-fixes.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
@@ -202,7 +203,7 @@
                             <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">User Management</h3>
                             <p class="text-gray-600 mb-4">Manage students, lecturers, and system users</p>
-                            <button onclick="openAcademicManagement()" class="btn-glass bg-blue-600 text-white hover:bg-blue-700">
+                            <button onclick="openUserManagement()" class="btn-glass bg-blue-600 text-white hover:bg-blue-700">
                                 <i class="fas fa-cog mr-2"></i>Manage Users
                             </button>
                         </div>
@@ -210,7 +211,7 @@
                             <i class="fas fa-book text-4xl text-green-600 mb-4"></i>
                             <h3 class="text-lg font-semibold text-gray-900 mb-2">Course Management</h3>
                             <p class="text-gray-600 mb-4">Create, edit, and manage academic courses</p>
-                            <button onclick="openAcademicManagement()" class="btn-glass bg-green-600 text-white hover:bg-green-700">
+                            <button onclick="openCourseManagement()" class="btn-glass bg-green-600 text-white hover:bg-green-700">
                                 <i class="fas fa-plus mr-2"></i>Manage Courses
                             </button>
                         </div>
@@ -295,6 +296,9 @@
                                 <button onclick="manageCourse(${course.id})" class="btn-glass bg-indigo-600 text-white hover:bg-indigo-700 w-full">
                                     <i class="fas fa-cog mr-2"></i>Manage Course
                                 </button>
+                                <button onclick="manageGrades(${course.id})" class="btn-glass bg-green-600 text-white hover:bg-green-700 w-full mt-2">
+                                    <i class="fas fa-graduation-cap mr-2"></i>Manage Grades
+                                </button>
                             </div>
                         `).join('')}
                     </div>
@@ -303,7 +307,7 @@
         }
 
         async function loadStudentDashboard() {
-            const enrollments = await api.getEnrollments(currentUser.id);
+            const enrollments = await api.getEnrollments(currentUser.studentId || currentUser.id);
             const grades = enrollments.filter(e => e.grade);
             const gpa = grades.length > 0 ? 
                 grades.reduce((sum, e) => sum + getGradePoints(e.grade), 0) / grades.length : 0;
@@ -398,13 +402,28 @@
             window.location.href = 'academic-management.html';
         }
 
+        function openUserManagement() {
+            localStorage.setItem('adminSection', 'users');
+            window.location.href = 'admin.html';
+        }
+
+        function openCourseManagement() {
+            localStorage.setItem('adminSection', 'courses');
+            window.location.href = 'admin.html';
+        }
+
         function manageCourse(courseId) {
             localStorage.setItem('selectedCourseId', courseId);
             window.location.href = 'academic-management.html';
         }
 
+        function manageGrades(courseId) {
+            localStorage.setItem('selectedCourseId', courseId);
+            window.location.href = 'lecturer-grades.html';
+        }
+
         function browseCourses() {
-            window.location.href = 'academic-management.html';
+            window.location.href = 'student-courses.html';
         }
 
         function viewSystemLogs() {

@@ -63,18 +63,20 @@ const api = {
   // Lecturers
   async getLecturers() { return await this.request('/lecturers', { method: 'GET' }); },
   async getLecturer(id) { return await this.request(`/lecturers/${id}`, { method: 'GET' }); },
-  async createLecturer(lecturerData) { return await this.request('/lecturers', { method: 'POST', body: JSON.stringify(lecturerData) }); },
-  async updateLecturer(id, lecturerData) { return await this.request(`/lecturers/${id}`, { method: 'PUT', body: JSON.stringify(lecturerData) }); },
-  async deleteLecturer(id) { return await this.request(`/lecturers/${id}`, { method: 'DELETE' }); },
+  async createLecturer(lecturerData) { return await this.request('/admin/lecturers', { method: 'POST', body: JSON.stringify(lecturerData) }); },
+  async updateLecturer(id, lecturerData) { return await this.request(`/admin/lecturers/${id}`, { method: 'PUT', body: JSON.stringify(lecturerData) }); },
+  async deleteLecturer(id) { return await this.request(`/admin/lecturers/${id}`, { method: 'DELETE' }); },
   async getLecturerCourses(lecturerId) { return await this.request(`/lecturers/${lecturerId}/courses`, { method: 'GET' }); },
   async assignLecturerToCourse(courseId, lecturerId) { return await this.request(`/courses/${courseId}/assign-lecturer/${lecturerId}`, { method: 'PUT' }); },
   async assignLecturerToCourseAdmin(courseId, lecturerId) { return await this.request(`/admin/courses/${courseId}/assign-lecturer/${lecturerId}`, { method: 'PUT' }); },
 
   // Enrollments
+  async getEnrollment(enrollmentId) { return await this.request(`/enrollments/${enrollmentId}`, { method: 'GET' }); },
   async getEnrollments(studentId) { return await this.request(`/students/${studentId}/enrollments`, { method: 'GET' }); },
   async enrollStudent(studentId, courseId) { return await this.request(`/students/${studentId}/enrollments?courseId=${courseId}`, { method: 'POST' }); },
   async dropEnrollment(studentId, enrollmentId) { return await this.request(`/students/${studentId}/enrollments/${enrollmentId}`, { method: 'DELETE' }); },
 
   // Grades (admin endpoint fallback)
+  async assignGradeAdmin(enrollmentId, grade) { return await this.request(`/admin/enrollments/${enrollmentId}/grade?grade=${grade}`, { method: 'PUT' }); },
   async assignGrade(enrollmentId, grade) { return await this.request(`/admin/enrollments/${enrollmentId}/grade?grade=${grade}`, { method: 'PUT' }); },
 }; 

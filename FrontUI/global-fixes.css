@@ -1,0 +1,63 @@
+/* Global fixes for text visibility and button display */
+
+/* Force all text to be black */
+* {
+  color: #000000 !important;
+}
+
+/* Override any gray text */
+.text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
+  color: #000000 !important;
+}
+
+/* Ensure button text is always visible */
+button, .btn-primary, .btn-secondary, .btn-outline, .btn-glass {
+  color: inherit !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Force button text to be visible */
+button span, .btn-primary span, .btn-secondary span, .btn-outline span, .btn-glass span {
+  color: inherit !important;
+  display: inline !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Override any hidden text */
+.hidden, [style*="display: none"], [style*="visibility: hidden"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure icons don't hide text */
+.fas, .far, .fab {
+  margin-right: 0.5rem !important;
+}
+
+/* Force all headings to be black */
+h1, h2, h3, h4, h5, h6 {
+  color: #000000 !important;
+}
+
+/* Force all paragraphs to be black */
+p {
+  color: #000000 !important;
+}
+
+/* Force all labels to be black */
+label {
+  color: #000000 !important;
+}
+
+/* Force all spans to be black */
+span {
+  color: #000000 !important;
+}
+
+/* Force all divs to be black */
+div {
+  color: #000000 !important;
+}

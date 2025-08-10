@@ -7,6 +7,7 @@
   <link href="./dist/output.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="styles.css" rel="stylesheet">
+  <link href="global-fixes.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
   <nav class="bg-white shadow-lg border-b border-gray-200">
@@ -183,6 +184,10 @@
           <label>Phone Number</label>
           <input type="tel" id="lecturerPhoneNumber" class="form-input">
         </div>
+        <div class="form-group">
+          <label>Hire Date</label>
+          <input type="date" id="lecturerHireDate" required class="form-input">
+        </div>
         <div class="modal-footer">
           <button type="button" onclick="closeModal('addLecturerModal')" class="btn-secondary">Cancel</button>
           <button type="submit" class="btn-primary">Add Lecturer</button>
@@ -232,20 +237,40 @@
                 
                 let state = { students: [], courses: [], lecturers: [] };
 
-    function hideAll(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
-    function showSection(id){ hideAll(); document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); document.querySelector(`[onclick="showSection('${id}')"]`).classList.add('active'); document.getElementById(id).classList.remove('hidden'); }
+    function hideAll(){ 
+        document.querySelectorAll('.section').forEach(s=>s?.classList?.add('hidden')); 
+    }
+    function showSection(id){ 
+        hideAll(); 
+        document.querySelectorAll('.nav-link').forEach(l=>l?.classList?.remove('active')); 
+        const navLink = document.querySelector(`[onclick="showSection('${id}')"]`);
+        if (navLink) navLink.classList.add('active');
+        const section = document.getElementById(id);
+        if (section) section.classList.remove('hidden');
+    }
 
-    function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
-    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+    function openModal(id){ 
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('hidden'); 
+    }
+    function closeModal(id){ 
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.add('hidden'); 
+    }
 
     async function init(){
       try {
         // Load dashboard stats
         const stats = await api.request('/admin/dashboard/stats');
-        document.getElementById('statStudents').textContent = stats.totalStudents;
-        document.getElementById('statCourses').textContent = stats.totalCourses;
-        document.getElementById('statLecturers').textContent = stats.totalLecturers;
-        document.getElementById('statEnrollments').textContent = stats.totalEnrollments;
+        const statStudents = document.getElementById('statStudents');
+        const statCourses = document.getElementById('statCourses');
+        const statLecturers = document.getElementById('statLecturers');
+        const statEnrollments = document.getElementById('statEnrollments');
+        
+        if (statStudents) statStudents.textContent = stats.totalStudents;
+        if (statCourses) statCourses.textContent = stats.totalCourses;
+        if (statLecturers) statLecturers.textContent = stats.totalLecturers;
+        if (statEnrollments) statEnrollments.textContent = stats.totalEnrollments;
 
         // Load data
         const [students, courses, lecturers] = await Promise.all([
@@ -264,7 +289,7 @@
         renderEnrollments();
       } catch(err) {
         console.error(err);
-        alert('Failed to initialize Admin page');
+        showNotification('Failed to initialize Admin page', 'error');
       }
     }
 
@@ -275,8 +300,8 @@
         <div class="text-sm text-gray-600 mb-3">${c.courseCode} • ${c.credits} credits</div>
         <div class="text-sm text-gray-500 mb-3">${c.description||'No description'}</div>
         <div class="flex gap-2">
-          <button class="btn-primary" onclick="editCourse(${c.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
-          <button class="btn-secondary" onclick="deleteCourse(${c.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+          <button class="btn-primary" onclick="editCourse(${c.id})"><i class="fas fa-edit mr-1"></i><span>Edit</span></button>
+          <button class="btn-secondary" onclick="deleteCourse(${c.id})"><i class="fas fa-trash mr-1"></i><span>Delete</span></button>
         </div>
       </div>`).join('');
     }
@@ -289,8 +314,8 @@
           <div class="text-sm text-gray-600">${s.email} • ${s.admissionNumber}</div>
         </div>
         <div class="flex gap-2">
-          <button class="btn-primary" onclick="editStudent(${s.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
-          <button class="btn-secondary" onclick="deleteStudent(${s.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+          <button class="btn-primary" onclick="editStudent(${s.id})"><i class="fas fa-edit mr-1"></i><span>Edit</span></button>
+          <button class="btn-secondary" onclick="deleteStudent(${s.id})"><i class="fas fa-trash mr-1"></i><span>Delete</span></button>
         </div>
       </div>`).join('');
     }
@@ -303,8 +328,8 @@
           <div class="text-sm text-gray-600">${l.email} • ${l.department||''}</div>
         </div>
         <div class="flex gap-2">
-          <button class="btn-primary" onclick="editLecturer(${l.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
-          <button class="btn-secondary" onclick="deleteLecturer(${l.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+          <button class="btn-primary" onclick="editLecturer(${l.id})"><i class="fas fa-edit mr-1"></i><span>Edit</span></button>
+          <button class="btn-secondary" onclick="deleteLecturer(${l.id})"><i class="fas fa-trash mr-1"></i><span>Delete</span></button>
         </div>
       </div>`).join('');
     }
@@ -335,96 +360,205 @@
     // Form handlers
     async function handleAddCourse(event){
       event.preventDefault();
+      const courseCode = document.getElementById('courseCode')?.value;
+      const courseTitle = document.getElementById('courseTitle')?.value;
+      const courseCredits = document.getElementById('courseCredits')?.value;
+      const courseDescription = document.getElementById('courseDescription')?.value;
+      const courseSemester = document.getElementById('courseSemester')?.value;
+      
+      if (!courseCode || !courseTitle || !courseCredits || !courseSemester) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+      }
+      
       const data = {
-        courseCode: document.getElementById('courseCode').value,
-        courseTitle: document.getElementById('courseTitle').value,
-        credits: parseInt(document.getElementById('courseCredits').value),
-        description: document.getElementById('courseDescription').value,
-        semester: document.getElementById('courseSemester').value
+        courseCode: courseCode,
+        courseTitle: courseTitle,
+        credits: parseInt(courseCredits),
+        description: courseDescription || '',
+        semester: courseSemester
       };
       
       try {
         await api.createCourse(data);
         closeModal('addCourseModal');
-        document.getElementById('addCourseForm').reset();
+        const form = document.getElementById('addCourseForm');
+        if (form) form.reset();
         init(); // Reload data
-        alert('Course added successfully');
+        showNotification('Course added successfully', 'success');
       } catch(err) {
-        alert('Failed to add course: ' + err.message);
+        showNotification('Failed to add course: ' + err.message, 'error');
       }
     }
 
     async function handleAddStudent(event){
       event.preventDefault();
+      const firstName = document.getElementById('studentFirstName')?.value;
+      const lastName = document.getElementById('studentLastName')?.value;
+      const email = document.getElementById('studentEmail')?.value;
+      const admissionNumber = document.getElementById('studentAdmissionNumber')?.value;
+      const dateOfBirth = document.getElementById('studentDateOfBirth')?.value;
+      const department = document.getElementById('studentDepartment')?.value;
+      
+      if (!firstName || !lastName || !email || !admissionNumber || !dateOfBirth || !department) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+      }
+      
       const data = {
-        firstName: document.getElementById('studentFirstName').value,
-        lastName: document.getElementById('studentLastName').value,
-        email: document.getElementById('studentEmail').value,
-        admissionNumber: document.getElementById('studentAdmissionNumber').value,
-        dateOfBirth: document.getElementById('studentDateOfBirth').value,
-        department: document.getElementById('studentDepartment').value
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        admissionNumber: admissionNumber,
+        dateOfBirth: dateOfBirth,
+        department: department
       };
       
       try {
         await api.createStudent(data);
         closeModal('addStudentModal');
-        document.getElementById('addStudentForm').reset();
+        const form = document.getElementById('addStudentForm');
+        if (form) form.reset();
         init(); // Reload data
-        alert('Student added successfully');
+        showNotification('Student added successfully', 'success');
       } catch(err) {
-        alert('Failed to add student: ' + err.message);
+        showNotification('Failed to add student: ' + err.message, 'error');
       }
     }
 
     async function handleAddLecturer(event){
       event.preventDefault();
+      const firstName = document.getElementById('lecturerFirstName')?.value;
+      const lastName = document.getElementById('lecturerLastName')?.value;
+      const email = document.getElementById('lecturerEmail')?.value;
+      const employeeNumber = document.getElementById('lecturerEmployeeNumber')?.value;
+      const department = document.getElementById('lecturerDepartment')?.value;
+      const specialization = document.getElementById('lecturerSpecialization')?.value;
+      const phoneNumber = document.getElementById('lecturerPhoneNumber')?.value;
+      const hireDate = document.getElementById('lecturerHireDate')?.value;
+      
+      if (!firstName || !lastName || !email || !employeeNumber || !department || !specialization || !phoneNumber || !hireDate) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+      }
+      
       const data = {
-        firstName: document.getElementById('lecturerFirstName').value,
-        lastName: document.getElementById('lecturerLastName').value,
-        email: document.getElementById('lecturerEmail').value,
-        employeeNumber: document.getElementById('lecturerEmployeeNumber').value,
-        department: document.getElementById('lecturerDepartment').value,
-        specialization: document.getElementById('lecturerSpecialization').value,
-        phoneNumber: document.getElementById('lecturerPhoneNumber').value,
-        hireDate: new Date().toISOString().split('T')[0]
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        employeeNumber: employeeNumber,
+        department: department,
+        specialization: specialization,
+        phoneNumber: phoneNumber,
+        hireDate: hireDate
       };
       
       try {
         await api.createLecturer(data);
         closeModal('addLecturerModal');
-        document.getElementById('addLecturerForm').reset();
+        const form = document.getElementById('addLecturerForm');
+        if (form) form.reset();
         init(); // Reload data
-        alert('Lecturer added successfully');
+        showNotification('Lecturer added successfully', 'success');
       } catch(err) {
-        alert('Failed to add lecturer: ' + err.message);
+        showNotification('Failed to add lecturer: ' + err.message, 'error');
       }
     }
 
     async function handleAddEnrollment(event){
       event.preventDefault();
-      const studentId = document.getElementById('enrollmentStudentId').value;
-      const courseId = document.getElementById('enrollmentCourseId').value;
+      const studentId = document.getElementById('enrollmentStudentId')?.value;
+      const courseId = document.getElementById('enrollmentCourseId')?.value;
+      
+      if (!studentId || !courseId) {
+        showNotification('Please select both student and course', 'error');
+        return;
+      }
       
       try {
         await api.request('/admin/enrollments?studentId=' + studentId + '&courseId=' + courseId, { method: 'POST' });
         closeModal('addEnrollmentModal');
-        document.getElementById('addEnrollmentForm').reset();
-        alert('Enrollment added successfully');
+        const form = document.getElementById('addEnrollmentForm');
+        if (form) form.reset();
+        showNotification('Enrollment added successfully', 'success');
       } catch(err) {
-        alert('Failed to add enrollment: ' + err.message);
+        showNotification('Failed to add enrollment: ' + err.message, 'error');
       }
     }
 
     // Admin actions
-    function editCourse(id){ alert('Edit course '+id+' - coming soon'); }
-    async function deleteCourse(id){ if(confirm('Delete course?')){ await api.deleteCourse(id); init(); } }
+    function editCourse(id){ showNotification('Edit course '+id+' - coming soon', 'info'); }
+    async function deleteCourse(id){ 
+        if(confirm('Delete course?')){ 
+            try {
+                await api.deleteCourse(id); 
+                init();
+                showNotification('Course deleted successfully', 'success');
+            } catch(err) {
+                showNotification('Failed to delete course: ' + err.message, 'error');
+            }
+        } 
+    }
 
-    function editStudent(id){ alert('Edit student '+id+' - coming soon'); }
-    async function deleteStudent(id){ if(confirm('Delete student?')){ await api.deleteStudent(id); init(); } }
+    function editStudent(id){ showNotification('Edit student '+id+' - coming soon', 'info'); }
+    async function deleteStudent(id){ 
+        if(confirm('Delete student?')){ 
+            try {
+                await api.deleteStudent(id); 
+                init();
+                showNotification('Student deleted successfully', 'success');
+            } catch(err) {
+                showNotification('Failed to delete student: ' + err.message, 'error');
+            }
+        } 
+    }
 
-    function editLecturer(id){ alert('Edit lecturer '+id+' - coming soon'); }
-    async function deleteLecturer(id){ if(confirm('Delete lecturer?')){ await api.deleteLecturer(id); init(); } }
+    function editLecturer(id){ showNotification('Edit lecturer '+id+' - coming soon', 'info'); }
+    async function deleteLecturer(id){ 
+        if(confirm('Delete lecturer?')){ 
+            try {
+                await api.deleteLecturer(id); 
+                init();
+                showNotification('Lecturer deleted successfully', 'success');
+            } catch(err) {
+                showNotification('Failed to delete lecturer: ' + err.message, 'error');
+            }
+        } 
+    }
 
+    // Check if there's a specific section to show
+    const adminSection = localStorage.getItem('adminSection');
+    if (adminSection) {
+        showSection(adminSection);
+        localStorage.removeItem('adminSection'); // Clear after use
+    }
+    
+    // Notification function
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+            type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <i class="fas ${
+                    type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-circle' :
+                    'fa-info-circle'
+                } mr-2"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    
     init();
   </script>
 </body>
