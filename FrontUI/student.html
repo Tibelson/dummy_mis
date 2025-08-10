@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal - MIS Web</title>
+  <link href="./dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="bg-white shadow-lg border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+              <i class="fas fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <div>
+              <h1 class="text-lg font-bold text-gray-900">MIS Web</h1>
+              <p class="text-xs text-gray-600">Student Portal</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+          <button onclick="showSection('dashboard')" class="nav-link">
+            <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+          </button>
+          <button onclick="showSection('courses')" class="nav-link">
+            <i class="fas fa-book mr-2"></i>Browse Courses
+          </button>
+          <button onclick="showSection('grades')" class="nav-link">
+            <i class="fas fa-star mr-2"></i>My Grades
+          </button>
+          <button onclick="logout()" class="btn-secondary">
+            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="section show">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Student Dashboard</h1>
+        <p class="dashboard-subtitle">Welcome back! Here's your academic overview</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="modern-grid mb-8">
+        <div class="stats-card">
+          <div class="stats-number" id="totalCourses">-</div>
+          <div class="stats-label">Enrolled Courses</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-number" id="totalCredits">-</div>
+          <div class="stats-label">Total Credits</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-number" id="gpa">-</div>
+          <div class="stats-label">Current GPA</div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-number" id="completedCourses">-</div>
+          <div class="stats-label">Completed</div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Recent Activity</h3>
+        <div id="recentActivity" class="space-y-3">
+          <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+            <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+            <span class="text-gray-700">Loading recent activity...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="section hidden">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-3xl font-bold text-gray-900">Available Courses</h2>
+          <p class="text-gray-600">Browse and enroll in courses for the current semester</p>
+        </div>
+        <div class="flex space-x-3">
+          <input type="text" id="courseSearch" placeholder="Search courses..." 
+                 class="form-input w-64">
+          <select id="semesterFilter" class="form-input w-48">
+            <option value="">All Semesters</option>
+            <option value="Fall 2024">Fall 2024</option>
+            <option value="Spring 2025">Spring 2025</option>
+            <option value="Summer 2025">Summer 2025</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="coursesGrid" class="modern-grid">
+        <!-- Courses will be loaded here -->
+      </div>
+    </section>
+
+    <!-- Grades Section -->
+    <section id="grades" class="section hidden">
+      <div class="mb-6">
+        <h2 class="text-3xl font-bold text-gray-900">My Grades</h2>
+        <p class="text-gray-600">View your academic performance and GPA</p>
+      </div>
+
+      <!-- GPA Summary -->
+      <div class="card mb-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Academic Summary</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="text-center p-4 bg-blue-50 rounded-lg">
+            <div class="text-2xl font-bold text-blue-600" id="overallGpa">-</div>
+            <div class="text-sm text-gray-600">Overall GPA</div>
+          </div>
+          <div class="text-center p-4 bg-green-50 rounded-lg">
+            <div class="text-2xl font-bold text-green-600" id="totalCreditsEarned">-</div>
+            <div class="text-sm text-gray-600">Credits Earned</div>
+          </div>
+          <div class="text-center p-4 bg-purple-50 rounded-lg">
+            <div class="text-2xl font-bold text-purple-600" id="coursesCompleted">-</div>
+            <div class="text-sm text-gray-600">Courses Completed</div>
+          </div>
+          <div class="text-center p-4 bg-orange-50 rounded-lg">
+            <div class="text-2xl font-bold text-orange-600" id="coursesInProgress">-</div>
+            <div class="text-sm text-gray-600">In Progress</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grades Table -->
+      <div class="card">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Course Grades</h3>
+        <div class="overflow-x-auto">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Course Code</th>
+                <th>Course Title</th>
+                <th>Credits</th>
+                <th>Grade</th>
+                <th>GPA Points</th>
+                <th>Semester</th>
+              </tr>
+            </thead>
+            <tbody id="gradesTableBody">
+              <tr>
+                <td colspan="6" class="text-center py-8 text-gray-500">
+                  <i class="fas fa-spinner fa-spin mr-2"></i>
+                  Loading grades...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Course Enrollment Modal -->
+  <div id="enrollModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Enroll in Course</h3>
+        <button onclick="closeModal('enrollModal')" class="modal-close">&times;</button>
+      </div>
+      <div id="enrollModalBody">
+        <!-- Course details will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    let currentUser = null;
+    let courses = [];
+    let enrollments = [];
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuth();
+      loadDashboard();
+    });
+
+    function checkAuth() {
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token || user.role !== 'STUDENT') {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      currentUser = user;
+    }
+
+    function showSection(sectionId) {
+      // Hide all sections
+      document.querySelectorAll('.section').forEach(section => {
+        section.classList.add('hidden');
+        section.classList.remove('show');
+      });
+      
+      // Show selected section
+      const section = document.getElementById(sectionId);
+      section.classList.remove('hidden');
+      section.classList.add('show');
+      
+      // Update navigation
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      // Load section data
+      switch(sectionId) {
+        case 'dashboard':
+          loadDashboard();
+          break;
+        case 'courses':
+          loadCourses();
+          break;
+        case 'grades':
+          loadGrades();
+          break;
+      }
+    }
+
+    async function loadDashboard() {
+      try {
+        // Load student data
+        const studentId = currentUser.studentId;
+        const [enrollmentsData, coursesData] = await Promise.all([
+          api.getEnrollments(studentId),
+          api.getCourses()
+        ]);
+        
+        enrollments = enrollmentsData;
+        courses = coursesData;
+        
+        // Update stats
+        document.getElementById('totalCourses').textContent = enrollments.length;
+        document.getElementById('totalCredits').textContent = enrollments.reduce((sum, e) => sum + (e.credits || 0), 0);
+        
+        // Calculate GPA
+        const grades = enrollments.filter(e => e.grade);
+        const gpa = grades.length > 0 ? 
+          grades.reduce((sum, e) => sum + getGradePoints(e.grade), 0) / grades.length : 0;
+        document.getElementById('gpa').textContent = gpa.toFixed(2);
+        
+        document.getElementById('completedCourses').textContent = grades.length;
+        
+        // Load recent activity
+        loadRecentActivity();
+        
+      } catch (error) {
+        console.error('Error loading dashboard:', error);
+      }
+    }
+
+    function loadRecentActivity() {
+      const activityDiv = document.getElementById('recentActivity');
+      const recentEnrollments = enrollments.slice(0, 5);
+      
+      if (recentEnrollments.length === 0) {
+        activityDiv.innerHTML = `
+          <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-info-circle text-2xl mb-2"></i>
+            <p>No recent activity</p>
+          </div>
+        `;
+        return;
+      }
+      
+      activityDiv.innerHTML = recentEnrollments.map(enrollment => {
+        const course = courses.find(c => c.id === enrollment.courseId);
+        return `
+          <div class="flex items-center p-3 bg-gray-50 rounded-lg">
+            <i class="fas fa-book text-blue-500 mr-3"></i>
+            <div class="flex-1">
+              <div class="font-medium">${course?.courseTitle || 'Unknown Course'}</div>
+              <div class="text-sm text-gray-600">Enrolled on ${new Date(enrollment.enrollmentDate).toLocaleDateString()}</div>
+            </div>
+            <span class="text-sm text-gray-500">${course?.courseCode || ''}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function loadCourses() {
+      try {
+        const coursesGrid = document.getElementById('coursesGrid');
+        coursesGrid.innerHTML = '<div class="col-span-full text-center py-8"><div class="loading"></div> Loading courses...</div>';
+        
+        const coursesData = await api.getCourses();
+        courses = coursesData;
+        
+        displayCourses(courses);
+      } catch (error) {
+        console.error('Error loading courses:', error);
+      }
+    }
+
+    function displayCourses(coursesToShow) {
+      const coursesGrid = document.getElementById('coursesGrid');
+      
+      if (coursesToShow.length === 0) {
+        coursesGrid.innerHTML = `
+          <div class="col-span-full text-center py-8 text-gray-500">
+            <i class="fas fa-search text-2xl mb-2"></i>
+            <p>No courses found</p>
+          </div>
+        `;
+        return;
+      }
+      
+      coursesGrid.innerHTML = coursesToShow.map(course => {
+        const isEnrolled = enrollments.some(e => e.courseId === course.id);
+        return `
+          <div class="card hover:shadow-xl transition-all duration-300">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-gray-900">${course.courseTitle}</h3>
+                <p class="text-gray-600">${course.courseCode}</p>
+              </div>
+              <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                ${course.credits} Credits
+              </span>
+            </div>
+            
+            <p class="text-gray-600 mb-4">${course.description}</p>
+            
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">${course.semester}</span>
+              ${isEnrolled ? 
+                '<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Enrolled</span>' :
+                `<button onclick="enrollInCourse(${course.id})" class="btn-primary">
+                  <i class="fas fa-plus mr-1"></i>Enroll
+                </button>`
+              }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function enrollInCourse(courseId) {
+      try {
+        const studentId = currentUser.studentId;
+        await api.enrollStudent(studentId, courseId);
+        
+        // Refresh data
+        await loadDashboard();
+        await loadCourses();
+        
+        showToast('Successfully enrolled in course!', 'success');
+      } catch (error) {
+        console.error('Error enrolling in course:', error);
+        showToast('Failed to enroll in course', 'error');
+      }
+    }
+
+    async function loadGrades() {
+      try {
+        const studentId = currentUser.studentId;
+        const enrollmentsData = await api.getEnrollments(studentId);
+        enrollments = enrollmentsData;
+        
+        // Calculate summary stats
+        const grades = enrollments.filter(e => e.grade);
+        const gpa = grades.length > 0 ? 
+          grades.reduce((sum, e) => sum + getGradePoints(e.grade), 0) / grades.length : 0;
+        
+        document.getElementById('overallGpa').textContent = gpa.toFixed(2);
+        document.getElementById('totalCreditsEarned').textContent = enrollments.reduce((sum, e) => sum + (e.credits || 0), 0);
+        document.getElementById('coursesCompleted').textContent = grades.length;
+        document.getElementById('coursesInProgress').textContent = enrollments.length - grades.length;
+        
+        // Display grades table
+        displayGradesTable(enrollments);
+        
+      } catch (error) {
+        console.error('Error loading grades:', error);
+      }
+    }
+
+    function displayGradesTable(enrollmentsData) {
+      const tbody = document.getElementById('gradesTableBody');
+      
+      if (enrollmentsData.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-8 text-gray-500">
+              No enrollments found
+            </td>
+          </tr>
+        `;
+        return;
+      }
+      
+      tbody.innerHTML = enrollmentsData.map(enrollment => {
+        const course = courses.find(c => c.id === enrollment.courseId);
+        const gradePoints = enrollment.grade ? getGradePoints(enrollment.grade) : '-';
+        
+        return `
+          <tr>
+            <td class="font-medium">${course?.courseCode || 'N/A'}</td>
+            <td>${course?.courseTitle || 'Unknown Course'}</td>
+            <td>${course?.credits || 0}</td>
+            <td>
+              ${enrollment.grade ? 
+                `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">${enrollment.grade}</span>` :
+                '<span class="text-gray-400">Pending</span>'
+              }
+            </td>
+            <td>${gradePoints}</td>
+            <td>${course?.semester || 'N/A'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function getGradePoints(grade) {
+      const gradeMap = {
+        'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+        'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0
+      };
+      return gradeMap[grade] || 0;
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('show');
+    }
+
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => toast.classList.add('show'), 100);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = 'home.html';
+    }
+
+    // Search and filter functionality
+    document.getElementById('courseSearch').addEventListener('input', function() {
+      filterCourses();
+    });
+
+    document.getElementById('semesterFilter').addEventListener('change', function() {
+      filterCourses();
+    });
+
+    function filterCourses() {
+      const searchTerm = document.getElementById('courseSearch').value.toLowerCase();
+      const semesterFilter = document.getElementById('semesterFilter').value;
+      
+      let filteredCourses = courses;
+      
+      if (searchTerm) {
+        filteredCourses = filteredCourses.filter(course => 
+          course.courseTitle.toLowerCase().includes(searchTerm) ||
+          course.courseCode.toLowerCase().includes(searchTerm)
+        );
+      }
+      
+      if (semesterFilter) {
+        filteredCourses = filteredCourses.filter(course => 
+          course.semester === semesterFilter
+        );
+      }
+      
+      displayCourses(filteredCourses);
+    }
+  </script>
+</body>
+</html> 

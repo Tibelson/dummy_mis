@@ -1,16 +1,21 @@
 {
   "name": "frontui",
   "version": "1.0.0",
-  "description": "A modern, responsive frontend for the MIS Web Student Management System built with vanilla JavaScript, HTML, and CSS.",
+  "description": "A modern frontend for the MIS Web Student Management System built with vanilla JavaScript, HTML, and CSS.",
   "main": "app.js",
   "scripts": {
     "dev": "serve .",
+    "build": "tailwindcss -i ./input.css -o ./dist/output.css",
+    "watch": "tailwindcss -i ./input.css -o ./dist/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serve": "^14.2.4"
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "serve": "^14.2.4",
+    "tailwindcss": "^4.1.11"
   }
 }

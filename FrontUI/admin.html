@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal - MIS Web</title>
+  <link href="./dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+  <nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="home.html" class="text-gray-700 hover:text-blue-600 font-semibold">Home</a>
+      <div class="space-x-4">
+        <a href="#" class="nav-link" onclick="showSection('dashboard')">Dashboard</a>
+        <a href="#" class="nav-link" onclick="showSection('courses')">Courses</a>
+        <a href="#" class="nav-link" onclick="showSection('students')">Students</a>
+        <a href="#" class="nav-link" onclick="showSection('lecturers')">Lecturers</a>
+        <a href="#" class="nav-link" onclick="showSection('enrollments')">Enrollments</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <section id="dashboard" class="section">
+      <h1 class="text-3xl font-bold text-gray-900 mb-6">Admin Dashboard</h1>
+      <div class="grid grid-cols-4 gap-6 mb-8">
+        <div class="card"><p class="card-title">Total Students</p><p id="statStudents" class="text-2xl font-bold">-</p></div>
+        <div class="card"><p class="card-title">Total Courses</p><p id="statCourses" class="text-2xl font-bold">-</p></div>
+        <div class="card"><p class="card-title">Lecturers</p><p id="statLecturers" class="text-2xl font-bold">-</p></div>
+        <div class="card"><p class="card-title">Enrollments</p><p id="statEnrollments" class="text-2xl font-bold">-</p></div>
+      </div>
+    </section>
+
+    <section id="courses" class="section hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Manage Courses</h2>
+        <button class="btn-primary" onclick="openAddCourse()"><i class="fas fa-plus mr-2"></i>Add Course</button>
+      </div>
+      <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <section id="students" class="section hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Manage Students</h2>
+        <button class="btn-primary" onclick="openAddStudent()"><i class="fas fa-plus mr-2"></i>Add Student</button>
+      </div>
+      <div id="studentsList" class="space-y-3"></div>
+    </section>
+
+    <section id="lecturers" class="section hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Manage Lecturers</h2>
+        <button class="btn-primary" onclick="openAddLecturer()"><i class="fas fa-plus mr-2"></i>Add Lecturer</button>
+      </div>
+      <div id="lecturersList" class="space-y-3"></div>
+    </section>
+
+    <section id="enrollments" class="section hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-semibold">Manage Enrollments</h2>
+        <button class="btn-primary" onclick="openAddEnrollment()"><i class="fas fa-plus mr-2"></i>Add Enrollment</button>
+      </div>
+      <div id="enrollmentsList" class="space-y-3"></div>
+    </section>
+  </main>
+
+  <!-- Add Course Modal -->
+  <div id="addCourseModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Course</h3>
+        <button onclick="closeModal('addCourseModal')" class="modal-close">&times;</button>
+      </div>
+      <form id="addCourseForm" onsubmit="handleAddCourse(event)">
+        <div class="form-group">
+          <label>Course Code</label>
+          <input type="text" id="courseCode" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Course Title</label>
+          <input type="text" id="courseTitle" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Credits</label>
+          <input type="number" id="courseCredits" required class="form-input" min="1" max="6">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="courseDescription" class="form-input" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Semester</label>
+          <select id="courseSemester" required class="form-input">
+            <option value="">Select Semester</option>
+            <option value="Fall 2024">Fall 2024</option>
+            <option value="Spring 2025">Spring 2025</option>
+            <option value="Summer 2025">Summer 2025</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('addCourseModal')" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Add Course</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Student Modal -->
+  <div id="addStudentModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Student</h3>
+        <button onclick="closeModal('addStudentModal')" class="modal-close">&times;</button>
+      </div>
+      <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="studentFirstName" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="studentLastName" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="studentEmail" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Admission Number</label>
+          <input type="text" id="studentAdmissionNumber" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <input type="date" id="studentDateOfBirth" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" id="studentDepartment" required class="form-input">
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('addStudentModal')" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Add Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Lecturer Modal -->
+  <div id="addLecturerModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Lecturer</h3>
+        <button onclick="closeModal('addLecturerModal')" class="modal-close">&times;</button>
+      </div>
+      <form id="addLecturerForm" onsubmit="handleAddLecturer(event)">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="lecturerFirstName" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="lecturerLastName" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="lecturerEmail" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Employee Number</label>
+          <input type="text" id="lecturerEmployeeNumber" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Department</label>
+          <input type="text" id="lecturerDepartment" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Specialization</label>
+          <input type="text" id="lecturerSpecialization" required class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="lecturerPhoneNumber" class="form-input">
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('addLecturerModal')" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Add Lecturer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Enrollment Modal -->
+  <div id="addEnrollmentModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Enrollment</h3>
+        <button onclick="closeModal('addEnrollmentModal')" class="modal-close">&times;</button>
+      </div>
+      <form id="addEnrollmentForm" onsubmit="handleAddEnrollment(event)">
+        <div class="form-group">
+          <label>Student</label>
+          <select id="enrollmentStudentId" required class="form-input">
+            <option value="">Select Student</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Course</label>
+          <select id="enrollmentCourseId" required class="form-input">
+            <option value="">Select Course</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" onclick="closeModal('addEnrollmentModal')" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Add Enrollment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+              <script src="api.js"></script>
+            <script>
+                // Check authentication
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const userRole = localStorage.getItem('userRole');
+                
+                if (!userRole || userRole !== 'ADMIN') {
+                    alert('Access denied. Please login as an admin.');
+                    window.location.href = 'login.html';
+                }
+                
+                let state = { students: [], courses: [], lecturers: [] };
+
+    function hideAll(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
+    function showSection(id){ hideAll(); document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); document.querySelector(`[onclick="showSection('${id}')"]`).classList.add('active'); document.getElementById(id).classList.remove('hidden'); }
+
+    function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+
+    async function init(){
+      try {
+        // Load dashboard stats
+        const stats = await api.request('/admin/dashboard/stats');
+        document.getElementById('statStudents').textContent = stats.totalStudents;
+        document.getElementById('statCourses').textContent = stats.totalCourses;
+        document.getElementById('statLecturers').textContent = stats.totalLecturers;
+        document.getElementById('statEnrollments').textContent = stats.totalEnrollments;
+
+        // Load data
+        const [students, courses, lecturers] = await Promise.all([
+          api.getStudents().catch(()=>[]),
+          api.getCourses().catch(()=>[]),
+          api.getLecturers().catch(()=>[])
+        ]);
+        
+        state.students = students;
+        state.courses = courses;
+        state.lecturers = lecturers;
+
+        renderCourses();
+        renderStudents();
+        renderLecturers();
+        renderEnrollments();
+      } catch(err) {
+        console.error(err);
+        alert('Failed to initialize Admin page');
+      }
+    }
+
+    function renderCourses(){
+      const grid = document.getElementById('coursesGrid');
+      grid.innerHTML = state.courses.map(c=>`<div class="bg-white rounded shadow p-5">
+        <div class="font-semibold mb-1">${c.courseTitle}</div>
+        <div class="text-sm text-gray-600 mb-3">${c.courseCode} • ${c.credits} credits</div>
+        <div class="text-sm text-gray-500 mb-3">${c.description||'No description'}</div>
+        <div class="flex gap-2">
+          <button class="btn-primary" onclick="editCourse(${c.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
+          <button class="btn-secondary" onclick="deleteCourse(${c.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+        </div>
+      </div>`).join('');
+    }
+
+    function renderStudents(){
+      const list = document.getElementById('studentsList');
+      list.innerHTML = state.students.map(s=>`<div class="bg-white rounded shadow p-4 flex items-center justify-between">
+        <div>
+          <div class="font-medium">${s.firstName} ${s.lastName}</div>
+          <div class="text-sm text-gray-600">${s.email} • ${s.admissionNumber}</div>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-primary" onclick="editStudent(${s.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
+          <button class="btn-secondary" onclick="deleteStudent(${s.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+        </div>
+      </div>`).join('');
+    }
+
+    function renderLecturers(){
+      const list = document.getElementById('lecturersList');
+      list.innerHTML = state.lecturers.map(l=>`<div class="bg-white rounded shadow p-4 flex items-center justify-between">
+        <div>
+          <div class="font-medium">${l.firstName} ${l.lastName}</div>
+          <div class="text-sm text-gray-600">${l.email} • ${l.department||''}</div>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn-primary" onclick="editLecturer(${l.id})"><i class="fas fa-edit mr-1"></i>Edit</button>
+          <button class="btn-secondary" onclick="deleteLecturer(${l.id})"><i class="fas fa-trash mr-1"></i>Delete</button>
+        </div>
+      </div>`).join('');
+    }
+
+    function renderEnrollments(){
+      // This would need a separate API call to get enrollments
+      document.getElementById('enrollmentsList').innerHTML = '<p class="text-gray-500">Enrollment management coming soon...</p>';
+    }
+
+    // Modal functions
+    function openAddCourse(){ openModal('addCourseModal'); }
+    function openAddStudent(){ openModal('addStudentModal'); }
+    function openAddLecturer(){ openModal('addLecturerModal'); }
+    function openAddEnrollment(){ 
+      // Populate dropdowns
+      const studentSelect = document.getElementById('enrollmentStudentId');
+      const courseSelect = document.getElementById('enrollmentCourseId');
+      
+      studentSelect.innerHTML = '<option value="">Select Student</option>' + 
+        state.students.map(s=>`<option value="${s.id}">${s.firstName} ${s.lastName} (${s.admissionNumber})</option>`).join('');
+      
+      courseSelect.innerHTML = '<option value="">Select Course</option>' + 
+        state.courses.map(c=>`<option value="${c.id}">${c.courseCode} - ${c.courseTitle}</option>`).join('');
+      
+      openModal('addEnrollmentModal'); 
+    }
+
+    // Form handlers
+    async function handleAddCourse(event){
+      event.preventDefault();
+      const data = {
+        courseCode: document.getElementById('courseCode').value,
+        courseTitle: document.getElementById('courseTitle').value,
+        credits: parseInt(document.getElementById('courseCredits').value),
+        description: document.getElementById('courseDescription').value,
+        semester: document.getElementById('courseSemester').value
+      };
+      
+      try {
+        await api.createCourse(data);
+        closeModal('addCourseModal');
+        document.getElementById('addCourseForm').reset();
+        init(); // Reload data
+        alert('Course added successfully');
+      } catch(err) {
+        alert('Failed to add course: ' + err.message);
+      }
+    }
+
+    async function handleAddStudent(event){
+      event.preventDefault();
+      const data = {
+        firstName: document.getElementById('studentFirstName').value,
+        lastName: document.getElementById('studentLastName').value,
+        email: document.getElementById('studentEmail').value,
+        admissionNumber: document.getElementById('studentAdmissionNumber').value,
+        dateOfBirth: document.getElementById('studentDateOfBirth').value,
+        department: document.getElementById('studentDepartment').value
+      };
+      
+      try {
+        await api.createStudent(data);
+        closeModal('addStudentModal');
+        document.getElementById('addStudentForm').reset();
+        init(); // Reload data
+        alert('Student added successfully');
+      } catch(err) {
+        alert('Failed to add student: ' + err.message);
+      }
+    }
+
+    async function handleAddLecturer(event){
+      event.preventDefault();
+      const data = {
+        firstName: document.getElementById('lecturerFirstName').value,
+        lastName: document.getElementById('lecturerLastName').value,
+        email: document.getElementById('lecturerEmail').value,
+        employeeNumber: document.getElementById('lecturerEmployeeNumber').value,
+        department: document.getElementById('lecturerDepartment').value,
+        specialization: document.getElementById('lecturerSpecialization').value,
+        phoneNumber: document.getElementById('lecturerPhoneNumber').value,
+        hireDate: new Date().toISOString().split('T')[0]
+      };
+      
+      try {
+        await api.createLecturer(data);
+        closeModal('addLecturerModal');
+        document.getElementById('addLecturerForm').reset();
+        init(); // Reload data
+        alert('Lecturer added successfully');
+      } catch(err) {
+        alert('Failed to add lecturer: ' + err.message);
+      }
+    }
+
+    async function handleAddEnrollment(event){
+      event.preventDefault();
+      const studentId = document.getElementById('enrollmentStudentId').value;
+      const courseId = document.getElementById('enrollmentCourseId').value;
+      
+      try {
+        await api.request('/admin/enrollments?studentId=' + studentId + '&courseId=' + courseId, { method: 'POST' });
+        closeModal('addEnrollmentModal');
+        document.getElementById('addEnrollmentForm').reset();
+        alert('Enrollment added successfully');
+      } catch(err) {
+        alert('Failed to add enrollment: ' + err.message);
+      }
+    }
+
+    // Admin actions
+    function editCourse(id){ alert('Edit course '+id+' - coming soon'); }
+    async function deleteCourse(id){ if(confirm('Delete course?')){ await api.deleteCourse(id); init(); } }
+
+    function editStudent(id){ alert('Edit student '+id+' - coming soon'); }
+    async function deleteStudent(id){ if(confirm('Delete student?')){ await api.deleteStudent(id); init(); } }
+
+    function editLecturer(id){ alert('Edit lecturer '+id+' - coming soon'); }
+    async function deleteLecturer(id){ if(confirm('Delete lecturer?')){ await api.deleteLecturer(id); init(); } }
+
+    init();
+  </script>
+</body>
+</html> 

@@ -51,6 +51,20 @@ public class AuthService {
         
         return new LoginResponseDTO(jwt, user.getUsername(), user.getRole().name(), "Login successful");
     }
+
+    public String authenticateUser(String username, String password) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return tokenProvider.generateToken(authentication);
+    }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
     
     public StudentDTO registerStudent(StudentDTO studentDTO) {
         // Create user account

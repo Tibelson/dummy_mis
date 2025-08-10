@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MIS Web - Home</title>
+  <meta http-equiv="refresh" content="0; url=home-new.html">
+  <script>window.location.replace('home-new.html');</script>
+  <link href="./dist/output.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="icon-fallback.css" />
+  <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Section -->
+  <div class="bg-primary-blue h-64 flex items-center justify-center">
+    <div class="text-center text-white">
+      <div class="w-24 h-24 bg-white bg-opacity-20 rounded-3xl flex items-center justify-center mx-auto mb-6">
+        <i class="fas fa-graduation-cap text-white text-4xl"></i>
+      </div>
+      <h1 class="text-4xl font-bold mb-2">MIS WEB</h1>
+      <p class="text-xl text-blue-100">Computer Engineering Student System</p>
+    </div>
+  </div>
+
+  <main class="max-w-6xl mx-auto px-6 py-16 -mt-16">
+    <!-- Role Selection Cards -->
+    <div class="modern-grid">
+      <!-- Student Card -->
+      <div class="group cursor-pointer transform transition-all duration-300 hover:scale-105" onclick="window.location.href='login.html'">
+        <div class="card h-full text-center hover:shadow-2xl">
+          <div class="w-20 h-20 bg-primary-blue rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <i class="fas fa-user-graduate text-white text-3xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Student Portal</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Browse courses, enroll in classes, view your grades, and manage your academic profile
+          </p>
+          <div class="space-y-2 text-sm text-gray-500 mb-6">
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Course Registration</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Grade Viewing</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Profile Management</span>
+            </div>
+          </div>
+          <button class="btn-primary w-full">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Access Student Portal
+          </button>
+        </div>
+      </div>
+
+      <!-- Lecturer Card -->
+      <div class="group cursor-pointer transform transition-all duration-300 hover:scale-105" onclick="window.location.href='login.html'">
+        <div class="card h-full text-center hover:shadow-2xl">
+          <div class="w-20 h-20 bg-primary-blue rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <i class="fas fa-chalkboard-teacher text-white text-3xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Lecturer Portal</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Manage your courses, view student enrollments, assign grades, and track academic progress
+          </p>
+          <div class="space-y-2 text-sm text-gray-500 mb-6">
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Course Management</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Grade Assignment</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Student Analytics</span>
+            </div>
+          </div>
+          <button class="btn-primary w-full">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Access Lecturer Portal
+          </button>
+        </div>
+      </div>
+
+      <!-- Admin Card -->
+      <div class="group cursor-pointer transform transition-all duration-300 hover:scale-105" onclick="window.location.href='login.html'">
+        <div class="card h-full text-center hover:shadow-2xl">
+          <div class="w-20 h-20 bg-primary-blue rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:shadow-xl transition-all duration-300">
+            <i class="fas fa-user-shield text-white text-3xl"></i>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4">Admin Portal</h3>
+          <p class="text-gray-600 mb-6 leading-relaxed">
+            Comprehensive system administration, user management, and institutional analytics
+          </p>
+          <div class="space-y-2 text-sm text-gray-500 mb-6">
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>User Management</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>System Analytics</span>
+            </div>
+            <div class="flex items-center justify-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>Full Control</span>
+            </div>
+          </div>
+          <button class="btn-primary w-full">
+            <i class="fas fa-sign-in-alt mr-2"></i>
+            Access Admin Portal
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-16 fade-in" style="animation-delay: 0.5s;">
+      <div class="inline-flex items-center space-x-6 text-gray-600">
+        <div class="flex items-center">
+          <i class="fas fa-shield-alt mr-2 text-primary-blue"></i>
+          <span>Secure & Reliable</span>
+        </div>
+        <div class="w-px h-4 bg-gray-300"></div>
+        <div class="flex items-center">
+          <i class="fas fa-clock mr-2 text-primary-blue"></i>
+          <span>24/7 Access</span>
+        </div>
+        <div class="w-px h-4 bg-gray-300"></div>
+        <div class="flex items-center">
+          <i class="fas fa-mobile-alt mr-2 text-primary-blue"></i>
+          <span>Mobile Friendly</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="icon-check.js"></script>
+  <script>
+    // Add some interactive animations
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate cards on scroll
+      const cards = document.querySelectorAll('.card');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+          }
+        });
+      });
+
+      cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `all 0.6s ease-out ${index * 0.1}s`;
+        observer.observe(card);
+      });
+
+      // Add hover effects to buttons
+      document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateY(-2px) scale(1.02)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateY(0) scale(1)';
+        });
+      });
+    });
+  </script>
+</body>
+</html> 

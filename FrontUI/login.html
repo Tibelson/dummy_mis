@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MIS Web</title>
+    <link href="./dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="icon-fallback.css" />
+</head>
+<body>
+    <!-- Clean Background -->
+    <div class="fixed inset-0 bg-gray-50"></div>
+    
+    <!-- Header Section -->
+    <div class="relative bg-primary-blue h-64 flex items-center justify-center">
+        <div class="text-center text-white">
+            <div class="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-graduation-cap text-white text-3xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold mb-2">MIS WEB</h1>
+            <p class="text-blue-100">Computer Engineering Student System</p>
+        </div>
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 -mt-32">
+        <div class="login-container fade-in">
+            <div class="login-header">
+                <div class="login-logo bounce-in">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                    Sign In
+                </h2>
+                <p class="text-gray-600">
+                    Access your student portal
+                </p>
+            </div>
+
+            <!-- Test Credentials Card -->
+            <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h3 class="text-sm font-semibold text-blue-800 mb-2">
+                    <i class="fas fa-info-circle mr-1"></i>Test Credentials
+                </h3>
+                <div class="space-y-1 text-xs text-blue-700">
+                    <div class="flex justify-between">
+                        <span><strong>Admin:</strong></span>
+                        <span>admin / admin123</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span><strong>Student:</strong></span>
+                        <span>STU001 / STU001</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span><strong>Lecturer:</strong></span>
+                        <span>john.doe@test.com / EMP001</span>
+                    </div>
+                </div>
+            </div>
+
+            <form class="space-y-6" id="loginForm">
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-primary-blue"></i>Username
+                        </label>
+                        <input id="username" name="username" type="text" required 
+                               class="form-input" 
+                               placeholder="Enter your username or email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-primary-blue"></i>Password
+                        </label>
+                        <input id="password" name="password" type="password" required 
+                               class="form-input" 
+                               placeholder="Enter your password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full py-3 text-lg font-semibold">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Sign In
+                </button>
+
+                <div class="text-center">
+                    <a href="home.html" class="text-primary-blue hover:text-primary-blue-dark font-medium transition-colors">
+                        <i class="fas fa-arrow-left mr-1"></i>
+                        Back to role selection
+                    </a>
+                </div>
+            </form>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                    <span class="text-red-700 font-medium"></span>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="hidden mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span class="text-green-700 font-medium">Login successful! Redirecting...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="icon-check.js"></script>
+    <script src="api.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            
+            // Clear previous messages
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+            
+            // Show loading state
+            submitBtn.innerHTML = '<div class="loading"></div> Signing In...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await api.login({ username, password });
+                
+                // Show success message
+                successDiv.classList.remove('hidden');
+                
+                // Store user details
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.userDetails));
+                localStorage.setItem('userRole', response.userDetails.role);
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    switch (response.userDetails.role) {
+                        case 'STUDENT':
+                            window.location.href = 'student.html';
+                            break;
+                        case 'LECTURER':
+                            window.location.href = 'lecturer.html';
+                            break;
+                        case 'ADMIN':
+                            window.location.href = 'admin.html';
+                            break;
+                        default:
+                            throw new Error('Unknown role');
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.querySelector('span').textContent = error.message || 'Login failed. Please check your credentials.';
+                errorDiv.classList.remove('hidden');
+                
+                // Reset button
+                submitBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('scale-105');
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('scale-105');
+            });
+        });
+    </script>
+</body>
+</html> 

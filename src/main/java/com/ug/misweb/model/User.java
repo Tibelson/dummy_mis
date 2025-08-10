@@ -1,5 +1,6 @@
 package com.ug.misweb.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class User implements UserDetails {
     private String username;
     
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     
     @Enumerated(EnumType.STRING)
@@ -36,7 +38,7 @@ public class User implements UserDetails {
     private boolean enabled = true;
     
     public enum Role {
-        STUDENT, ADMIN
+        STUDENT, LECTURER, ADMIN
     }
     
     @Override

@@ -1,5 +1,7 @@
 package com.ug.misweb.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -33,6 +35,12 @@ public class Course {
     @Column(nullable = false)
     private String semester;
     
+    @ManyToOne
+    @JoinColumn(name = "lecturer_id")
+    @JsonBackReference
+    private Lecturer lecturer;
+    
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Enrollment> enrollments;
 } 

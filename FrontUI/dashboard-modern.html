@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIS Web - Dashboard</title>
+    <link href="./dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="styles-modern.css" rel="stylesheet">
+    <link href="dashboard.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="nav-modern">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="nav-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="nav-info">
+                    <h1 class="nav-title">MIS Web</h1>
+                    <p class="nav-subtitle">Computer Engineering</p>
+                </div>
+            </div>
+
+            <div class="nav-menu" id="navMenu">
+                <!-- Dynamic navigation will be inserted here -->
+            </div>
+
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <button class="user-button" onclick="toggleUserMenu()">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span id="userName">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="user-dropdown hidden" id="userDropdown">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i>
+                            Settings
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="welcome-content">
+                <h1 class="welcome-title" id="welcomeTitle">Welcome back!</h1>
+                <p class="welcome-subtitle" id="welcomeSubtitle">Here's what's happening with your account today.</p>
+            </div>
+            <div class="welcome-actions">
+                <button class="btn-outline-modern" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh
+                </button>
+            </div>
+        </section>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid" id="statsGrid">
+            <!-- Stats cards will be dynamically inserted here -->
+        </section>
+
+        <!-- Content Sections -->
+        <div class="content-sections">
+            <!-- Student Dashboard -->
+            <section id="studentDashboard" class="content-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title">My Courses</h2>
+                    <button class="btn-primary-modern" onclick="showEnrollModal()">
+                        <i class="fas fa-plus"></i>
+                        Enroll in Course
+                    </button>
+                </div>
+                
+                <div class="courses-grid" id="studentCourses">
+                    <!-- Course cards will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Lecturer Dashboard -->
+            <section id="lecturerDashboard" class="content-section hidden">
+                <div class="section-header">
+                    <h2 class="section-title">My Courses</h2>
+                    <button class="btn-primary-modern" onclick="showAddCourseModal()">
+                        <i class="fas fa-plus"></i>
+                        Add Course
+                    </button>
+                </div>
+                
+                <div class="courses-grid" id="lecturerCourses">
+                    <!-- Course cards will be inserted here -->
+                </div>
+            </section>
+
+            <!-- Admin Dashboard -->
+            <section id="adminDashboard" class="content-section hidden">
+                <div class="admin-grid">
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">User Management</h3>
+                            <i class="fas fa-users admin-card-icon"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <p class="admin-card-description">Manage students, lecturers, and administrators</p>
+                            <div class="admin-card-actions">
+                                <button class="btn-sm-modern" onclick="showSection('students')">
+                                    <i class="fas fa-user-graduate"></i>
+                                    Students
+                                </button>
+                                <button class="btn-sm-modern" onclick="showSection('lecturers')">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                    Lecturers
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">Academic Management</h3>
+                            <i class="fas fa-graduation-cap admin-card-icon"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <p class="admin-card-description">Manage enrollments, grades, and course assignments</p>
+                            <div class="admin-card-actions">
+                                <button class="btn-sm-modern" onclick="window.location.href='academic-management.html'">
+                                    <i class="fas fa-user-graduate"></i>
+                                    Academic Portal
+                                </button>
+                                <button class="btn-sm-modern" onclick="showSection('enrollments')">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    Quick View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">Course Management</h3>
+                            <i class="fas fa-book admin-card-icon"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <p class="admin-card-description">Create and manage courses and curriculum</p>
+                            <div class="admin-card-actions">
+                                <button class="btn-sm-modern" onclick="showSection('courses')">
+                                    <i class="fas fa-book-open"></i>
+                                    All Courses
+                                </button>
+                                <button class="btn-sm-modern" onclick="showAddCourseModal()">
+                                    <i class="fas fa-plus"></i>
+                                    Add Course
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <h3 class="admin-card-title">System Analytics</h3>
+                            <i class="fas fa-chart-bar admin-card-icon"></i>
+                        </div>
+                        <div class="admin-card-content">
+                            <p class="admin-card-description">View system statistics and reports</p>
+                            <div class="admin-card-actions">
+                                <button class="btn-sm-modern" onclick="showSection('analytics')">
+                                    <i class="fas fa-analytics"></i>
+                                    View Reports
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading...</p>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="api.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

@@ -32,8 +32,27 @@ public class DataInitializer implements CommandLineRunner {
             admin.setEnabled(true);
             userRepository.save(admin);
         }
+
+        // Create test student user if not exists
+        if (!userRepository.existsByUsername("STU001")) {
+            User student = new User();
+            student.setUsername("STU001");
+            student.setPassword(passwordEncoder.encode("STU001"));
+            student.setRole(User.Role.STUDENT);
+            student.setEnabled(true);
+            userRepository.save(student);
+        }
+
+        // Create test lecturer user if not exists
+        if (!userRepository.existsByUsername("john.doe@test.com")) {
+            User lecturer = new User();
+            lecturer.setUsername("john.doe@test.com");
+            lecturer.setPassword(passwordEncoder.encode("EMP001"));
+            lecturer.setRole(User.Role.LECTURER);
+            lecturer.setEnabled(true);
+            userRepository.save(lecturer);
+        }
         
-        // Create some sample courses if none exist
         if (courseRepository.count() == 0) {
             Course course1 = new Course();
             course1.setCourseCode("CS101");

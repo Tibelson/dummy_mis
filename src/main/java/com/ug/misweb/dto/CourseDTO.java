@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class CourseDTO {
     private Long id;
     
@@ -27,4 +26,7 @@ public class CourseDTO {
     
     @NotBlank(message = "Semester is required")
     private String semester;
+    
+    private Long lecturerId;
+    private String lecturerName;
 } 

@@ -1,5 +1,6 @@
 package com.ug.misweb.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class Enrollment {
     
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
+    @JsonBackReference
     private Student student;
     
     @ManyToOne

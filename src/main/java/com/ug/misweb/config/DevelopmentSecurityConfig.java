@@ -34,15 +34,19 @@ public class DevelopmentSecurityConfig {
         return http.build();
     }
     
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
     
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*", 
+            "http://127.0.0.1:*",
+            "http://localhost:3000", 
+            "http://127.0.0.1:3000",
+            "http://localhost:52394",
+            "http://127.0.0.1:52394"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIS Web - Student Management System</title>
+    <link href="./dist/output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="styles-modern.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-700"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-8">
+                    <i class="fas fa-graduation-cap text-white text-3xl"></i>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                    MIS Web
+                </h1>
+                <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                    Modern Student Management System for Computer Engineering
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="scrollToRoles()" class="btn-glass">
+                        Get Started
+                        <i class="fas fa-arrow-down ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Elements -->
+        <div class="absolute top-20 left-10 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-20 right-10 w-96 h-96 bg-indigo-400/10 rounded-full blur-3xl"></div>
+    </section>
+
+    <!-- Role Selection Section -->
+    <section id="roles" class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Role</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Select your role to access the appropriate dashboard and features
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Student Card -->
+                <div class="role-card group" onclick="selectRole('student')">
+                    <div class="role-icon student">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3 class="role-title">Student</h3>
+                    <p class="role-description">
+                        Access your courses, view grades, and manage your academic journey
+                    </p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check"></i> Course Registration</li>
+                        <li><i class="fas fa-check"></i> Grade Tracking</li>
+                        <li><i class="fas fa-check"></i> Academic Progress</li>
+                    </ul>
+                    <div class="role-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Lecturer Card -->
+                <div class="role-card group" onclick="selectRole('lecturer')">
+                    <div class="role-icon lecturer">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3 class="role-title">Lecturer</h3>
+                    <p class="role-description">
+                        Manage your courses, students, and grade assignments efficiently
+                    </p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check"></i> Course Management</li>
+                        <li><i class="fas fa-check"></i> Student Oversight</li>
+                        <li><i class="fas fa-check"></i> Grade Assignment</li>
+                    </ul>
+                    <div class="role-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+
+                <!-- Admin Card -->
+                <div class="role-card group" onclick="selectRole('admin')">
+                    <div class="role-icon admin">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h3 class="role-title">Administrator</h3>
+                    <p class="role-description">
+                        Complete system control with user and course management
+                    </p>
+                    <ul class="role-features">
+                        <li><i class="fas fa-check"></i> User Management</li>
+                        <li><i class="fas fa-check"></i> System Configuration</li>
+                        <li><i class="fas fa-check"></i> Analytics & Reports</li>
+                    </ul>
+                    <div class="role-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose MIS Web?</h2>
+                <p class="text-xl text-gray-600">Modern, efficient, and user-friendly</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Lightning Fast</h3>
+                    <p class="feature-description">
+                        Optimized performance for quick access to all your academic data
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Secure & Private</h3>
+                    <p class="feature-description">
+                        Your data is protected with enterprise-grade security measures
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Mobile Friendly</h3>
+                    <p class="feature-description">
+                        Access your dashboard from any device, anywhere, anytime
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content-modern">
+            <div class="modal-header-modern">
+                <h2 id="loginTitle" class="modal-title">Login</h2>
+                <button onclick="hideModal('loginModal')" class="modal-close-modern">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="loginForm" class="space-y-6">
+                <div class="form-group-modern">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" id="username" name="username" required class="form-input-modern">
+                </div>
+                
+                <div class="form-group-modern">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" required class="form-input-modern">
+                </div>
+                
+                <button type="submit" class="btn-primary-modern w-full">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="demo-credentials">
+                <p id="demoInfo" class="text-sm text-gray-600">
+                    <strong>Demo Credentials:</strong><br>
+                    Username: demo<br>
+                    Password: demo123
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="auth.js"></script>
+    <script>
+        function scrollToRoles() {
+            document.getElementById('roles').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function selectRole(role) {
+            localStorage.setItem('selectedRole', role);
+            
+            // Update modal title and demo credentials
+            const loginTitle = document.getElementById('loginTitle');
+            const demoInfo = document.getElementById('demoInfo');
+            
+            loginTitle.textContent = `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`;
+            
+            if (role === 'admin') {
+                demoInfo.innerHTML = '<strong>Demo Credentials:</strong><br>Username: admin<br>Password: admin123';
+            } else if (role === 'student') {
+                demoInfo.innerHTML = '<strong>Demo Credentials:</strong><br>Username: student<br>Password: student123';
+            } else if (role === 'lecturer') {
+                demoInfo.innerHTML = '<strong>Demo Credentials:</strong><br>Username: lecturer<br>Password: lecturer123';
+            }
+            
+            showModal('loginModal');
+        }
+
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = localStorage.getItem('selectedRole');
+            
+            try {
+                // Simulate login (replace with actual API call)
+                if (username && password) {
+                    localStorage.setItem('userRole', role);
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // Redirect based on role
+                    if (role === 'student') {
+                        window.location.href = 'student.html';
+                    } else if (role === 'lecturer') {
+                        window.location.href = 'lecturer.html';
+                    } else if (role === 'admin') {
+                        window.location.href = 'admin.html';
+                    }
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('Login failed. Please try again.', 'error');
+            }
+        });
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-content">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
