@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MIS Web</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="styles-modern.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-lg font-bold text-gray-900">MIS Web</h1>
+                            <p class="text-xs text-gray-600" id="dashboardTitle">Dashboard</p>
+                        </div>
+                    </div>
+                    <span id="userRole" class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-sm font-medium"></span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="welcomeMessage" class="text-gray-700 font-medium"></span>
+                    <button onclick="openAcademicManagement()" class="btn-glass text-indigo-600 hover:text-indigo-700">
+                        <i class="fas fa-cogs mr-2"></i>Academic Management
+                    </button>
+                    <button onclick="logout()" class="btn-glass text-red-600 hover:text-red-700">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Dashboard Stats -->
+        <div id="dashboardStats" class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Stats cards will be populated here -->
+        </div>
+
+        <!-- Role-specific Content -->
+        <div id="roleContent" class="space-y-8">
+            <!-- Content will be populated based on user role -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script>
+        let currentUser = null;
+        let userRole = null;
+        let authToken = null;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+        });
+
+        async function initializeDashboard() {
+            try {
+                // Check authentication
+                const token = localStorage.getItem('token');
+                const role = localStorage.getItem('userRole');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                if (!token || !role) {
+                    window.location.href = 'home.html';
+                    return;
+                }
+                
+                currentUser = user;
+                userRole = role;
+                authToken = token;
+                
+                // Update UI based on role
+                updateUIForRole();
+                
+                // Load dashboard data
+                await loadDashboardData();
+                
+            } catch (error) {
+                console.error('Dashboard initialization error:', error);
+                showNotification('Failed to initialize dashboard', 'error');
+            }
+        }
+
+        function updateUIForRole() {
+            const roleDisplay = document.getElementById('userRole');
+            const dashboardTitle = document.getElementById('dashboardTitle');
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            
+            switch (userRole) {
+                case 'ADMIN':
+                    roleDisplay.textContent = 'Administrator';
+                    roleDisplay.className = 'px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium';
+                    dashboardTitle.textContent = 'Admin Dashboard';
+                    welcomeMessage.textContent = `Welcome, ${currentUser.firstName || 'Admin'}!`;
+                    break;
+                case 'LECTURER':
+                    roleDisplay.textContent = 'Lecturer';
+                    roleDisplay.className = 'px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium';
+                    dashboardTitle.textContent = 'Lecturer Dashboard';
+                    welcomeMessage.textContent = `Welcome, Dr. ${currentUser.lastName || 'Lecturer'}!`;
+                    break;
+                case 'STUDENT':
+                    roleDisplay.textContent = 'Student';
+                    roleDisplay.className = 'px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium';
+                    dashboardTitle.textContent = 'Student Dashboard';
+                    welcomeMessage.textContent = `Welcome, ${currentUser.firstName || 'Student'}!`;
+                    break;
+            }
+        }
+
+        async function loadDashboardData() {
+            try {
+                showLoading(true);
+                
+                switch (userRole) {
+                    case 'ADMIN':
+                        await loadAdminDashboard();
+                        break;
+                    case 'LECTURER':
+                        await loadLecturerDashboard();
+                        break;
+                    case 'STUDENT':
+                        await loadStudentDashboard();
+                        break;
+                }
+                
+            } catch (error) {
+                console.error('Failed to load dashboard data:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function loadAdminDashboard() {
+            const stats = await api.getDashboardStats();
+            
+            // Update stats cards
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Students</p>
+                            <p class="text-2xl font-bold text-gray-900">${stats.totalStudents}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-book text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Courses</p>
+                            <p class="text-2xl font-bold text-gray-900">${stats.totalCourses}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-chalkboard-teacher text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Lecturers</p>
+                            <p class="text-2xl font-bold text-gray-900">${stats.totalLecturers}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600">
+                            <i class="fas fa-user-graduate text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Enrollments</p>
+                            <p class="text-2xl font-bold text-gray-900">${stats.totalEnrollments}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Admin-specific content
+            document.getElementById('roleContent').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Administration</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border border-blue-200">
+                            <i class="fas fa-users text-4xl text-blue-600 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">User Management</h3>
+                            <p class="text-gray-600 mb-4">Manage students, lecturers, and system users</p>
+                            <button onclick="openAcademicManagement()" class="btn-glass bg-blue-600 text-white hover:bg-blue-700">
+                                <i class="fas fa-cog mr-2"></i>Manage Users
+                            </button>
+                        </div>
+                        <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
+                            <i class="fas fa-book text-4xl text-green-600 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Course Management</h3>
+                            <p class="text-gray-600 mb-4">Create, edit, and manage academic courses</p>
+                            <button onclick="openAcademicManagement()" class="btn-glass bg-green-600 text-white hover:bg-green-700">
+                                <i class="fas fa-plus mr-2"></i>Manage Courses
+                            </button>
+                        </div>
+                        <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
+                            <i class="fas fa-chart-bar text-4xl text-purple-600 mb-4"></i>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">System Analytics</h3>
+                            <p class="text-gray-600 mb-4">View system logs and performance metrics</p>
+                            <button onclick="viewSystemLogs()" class="btn-glass bg-purple-600 text-white hover:bg-purple-700">
+                                <i class="fas fa-chart-line mr-2"></i>View Analytics
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadLecturerDashboard() {
+            const lecturerId = currentUser.lecturerId || currentUser.id;
+            const lecturerCourses = await api.getLecturerCourses(lecturerId);
+            const totalStudents = lecturerCourses.reduce((sum, course) => sum + (course.enrollments?.length || 0), 0);
+            const pendingGrades = lecturerCourses.reduce((sum, course) => 
+                sum + (course.enrollments?.filter(e => !e.grade)?.length || 0), 0);
+
+            // Update stats cards
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-book text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">My Courses</p>
+                            <p class="text-2xl font-bold text-gray-900">${lecturerCourses.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-users text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Students</p>
+                            <p class="text-2xl font-bold text-gray-900">${totalStudents}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                            <i class="fas fa-exclamation-triangle text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Pending Grades</p>
+                            <p class="text-2xl font-bold text-gray-900">${pendingGrades}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Department</p>
+                            <p class="text-lg font-bold text-gray-900">${currentUser.department || 'N/A'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Lecturer-specific content
+            document.getElementById('roleContent').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">My Courses</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${lecturerCourses.map(course => `
+                            <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">${course.courseTitle}</h3>
+                                <p class="text-indigo-600 font-medium mb-2">${course.courseCode}</p>
+                                <p class="text-gray-600 mb-4">${course.enrollments?.length || 0} students enrolled</p>
+                                <button onclick="manageCourse(${course.id})" class="btn-glass bg-indigo-600 text-white hover:bg-indigo-700 w-full">
+                                    <i class="fas fa-cog mr-2"></i>Manage Course
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadStudentDashboard() {
+            const enrollments = await api.getEnrollments(currentUser.id);
+            const grades = enrollments.filter(e => e.grade);
+            const gpa = grades.length > 0 ? 
+                grades.reduce((sum, e) => sum + getGradePoints(e.grade), 0) / grades.length : 0;
+            const totalCredits = enrollments.reduce((sum, e) => sum + (e.course?.credits || e.credits || 0), 0);
+
+            // Update stats cards
+            document.getElementById('dashboardStats').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                            <i class="fas fa-book text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Enrolled Courses</p>
+                            <p class="text-2xl font-bold text-gray-900">${enrollments.length}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-green-100 text-green-600">
+                            <i class="fas fa-star text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Current GPA</p>
+                            <p class="text-2xl font-bold text-gray-900">${gpa.toFixed(2)}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                            <i class="fas fa-graduation-cap text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Total Credits</p>
+                            <p class="text-2xl font-bold text-gray-900">${totalCredits}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl p-6 shadow-lg border border-gray-200">
+                    <div class="flex items-center">
+                        <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                            <i class="fas fa-check-circle text-2xl"></i>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600">Completed</p>
+                            <p class="text-2xl font-bold text-gray-900">${grades.length}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Student-specific content
+            document.getElementById('roleContent').innerHTML = `
+                <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200 p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">My Courses</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${enrollments.map(enrollment => `
+                            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">${enrollment.course?.courseTitle || 'Unknown Course'}</h3>
+                                <p class="text-blue-600 font-medium mb-2">${enrollment.course?.courseCode || 'N/A'}</p>
+                                <p class="text-gray-600 mb-2">${enrollment.course?.credits || 0} Credits</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-500">Grade:</span>
+                                    <span class="${enrollment.grade ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'} px-2 py-1 rounded-full text-sm font-medium">
+                                        ${enrollment.grade || 'Pending'}
+                                    </span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-6 text-center">
+                        <button onclick="browseCourses()" class="btn-glass bg-blue-600 text-white hover:bg-blue-700">
+                            <i class="fas fa-plus mr-2"></i>Browse More Courses
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper functions
+        function getGradePoints(grade) {
+            const gradeMap = {
+                'A+': 4.0, 'A': 4.0, 'A-': 3.7, 'B+': 3.3, 'B': 3.0, 'B-': 2.7,
+                'C+': 2.3, 'C': 2.0, 'C-': 1.7, 'D+': 1.3, 'D': 1.0, 'F': 0.0
+            };
+            return gradeMap[grade] || 0;
+        }
+
+        function openAcademicManagement() {
+            window.location.href = 'academic-management.html';
+        }
+
+        function manageCourse(courseId) {
+            localStorage.setItem('selectedCourseId', courseId);
+            window.location.href = 'academic-management.html';
+        }
+
+        function browseCourses() {
+            window.location.href = 'academic-management.html';
+        }
+
+        function viewSystemLogs() {
+            showNotification('System logs feature - Coming soon!', 'info');
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('user');
+            localStorage.removeItem('selectedRole');
+            window.location.href = 'home.html';
+        }
+
+        function showLoading(show) {
+            // Simple loading implementation
+            if (show) {
+                document.body.style.cursor = 'wait';
+            } else {
+                document.body.style.cursor = 'default';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${
+                        type === 'success' ? 'fa-check-circle' :
+                        type === 'error' ? 'fa-exclamation-circle' :
+                        'fa-info-circle'
+                    } mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

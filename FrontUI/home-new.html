@@ -191,7 +191,7 @@
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
 
-    <script src="auth.js"></script>
+    <script src="api.js"></script>
     <script>
         function scrollToRoles() {
             document.getElementById('roles').scrollIntoView({ 
@@ -232,29 +232,17 @@
         // Login form handler
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            const role = localStorage.getItem('selectedRole');
-            
             try {
-                // Simulate login (replace with actual API call)
-                if (username && password) {
-                    localStorage.setItem('userRole', role);
-                    localStorage.setItem('isLoggedIn', 'true');
-                    
-                    // Redirect based on role
-                    if (role === 'student') {
-                        window.location.href = 'student.html';
-                    } else if (role === 'lecturer') {
-                        window.location.href = 'lecturer.html';
-                    } else if (role === 'admin') {
-                        window.location.href = 'admin.html';
-                    }
-                }
+                const response = await api.login({ username, password });
+                localStorage.setItem('token', response.token);
+                localStorage.setItem('user', JSON.stringify(response.userDetails));
+                localStorage.setItem('userRole', response.userDetails.role);
+                window.location.href = 'dashboard-unified.html';
             } catch (error) {
                 console.error('Login error:', error);
-                showToast('Login failed. Please try again.', 'error');
+                showToast(error.message || 'Login failed. Please try again.', 'error');
             }
         });
 

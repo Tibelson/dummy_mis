@@ -1,9 +1,11 @@
 package com.ug.misweb.config;
 
 import com.ug.misweb.model.Course;
+import com.ug.misweb.model.Lecturer;
 import com.ug.misweb.model.User;
 import com.ug.misweb.repository.CourseRepository;
 import com.ug.misweb.repository.UserRepository;
+import com.ug.misweb.repository.LecturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,38 +21,50 @@ public class DataInitializer implements CommandLineRunner {
     private CourseRepository courseRepository;
     
     @Autowired
+    private LecturerRepository lecturerRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
     
     @Override
     public void run(String... args) throws Exception {
-        // Create admin user if not exists
-        if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole(User.Role.ADMIN);
-            admin.setEnabled(true);
-            userRepository.save(admin);
-        }
+        // Upsert admin user with known dev password
+        User admin = userRepository.findByUsername("admin").orElseGet(User::new);
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        admin.setRole(User.Role.ADMIN);
+        admin.setEnabled(true);
+        userRepository.save(admin);
 
-        // Create test student user if not exists
-        if (!userRepository.existsByUsername("STU001")) {
-            User student = new User();
-            student.setUsername("STU001");
-            student.setPassword(passwordEncoder.encode("STU001"));
-            student.setRole(User.Role.STUDENT);
-            student.setEnabled(true);
-            userRepository.save(student);
-        }
+        // Upsert test student user with known dev password
+        User student = userRepository.findByUsername("STU001").orElseGet(User::new);
+        student.setUsername("STU001");
+        student.setPassword(passwordEncoder.encode("STU001"));
+        student.setRole(User.Role.STUDENT);
+        student.setEnabled(true);
+        userRepository.save(student);
 
-        // Create test lecturer user if not exists
-        if (!userRepository.existsByUsername("john.doe@test.com")) {
-            User lecturer = new User();
-            lecturer.setUsername("john.doe@test.com");
-            lecturer.setPassword(passwordEncoder.encode("EMP001"));
-            lecturer.setRole(User.Role.LECTURER);
-            lecturer.setEnabled(true);
-            userRepository.save(lecturer);
+        // Upsert test lecturer user and ensure profile exists
+        User lecturerUser = userRepository.findByUsername("john.doe@test.com").orElseGet(User::new);
+        boolean isNewLecturerUser = lecturerUser.getId() == null;
+        lecturerUser.setUsername("john.doe@test.com");
+        lecturerUser.setPassword(passwordEncoder.encode("EMP001"));
+        lecturerUser.setRole(User.Role.LECTURER);
+        lecturerUser.setEnabled(true);
+        lecturerUser = userRepository.save(lecturerUser);
+
+        // Ensure Lecturer profile exists
+        if (isNewLecturerUser || lecturerRepository.findByUserId(lecturerUser.getId()).isEmpty()) {
+            Lecturer lec = new Lecturer();
+            lec.setUser(lecturerUser);
+            lec.setFirstName("John");
+            lec.setLastName("Doe");
+            lec.setEmail("john.doe@test.com");
+            lec.setEmployeeNumber("EMP001");
+            lec.setDepartment("Computer Engineering");
+            lec.setSpecialization("Software Engineering");
+            lec.setHireDate(java.time.LocalDate.now());
+            lecturerRepository.save(lec);
         }
         
         if (courseRepository.count() == 0) {

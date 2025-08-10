@@ -6,7 +6,7 @@
     <title>Academic Management - MIS Web</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="styles-modern.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-white to-cyan-50 min-h-screen">
     <!-- Navigation -->
@@ -52,6 +52,12 @@
                     <button onclick="switchTab('management')" class="tab-button" data-tab="management" id="adminTab" style="display: none;">
                         <i class="fas fa-cogs mr-2"></i>Admin Management
                     </button>
+                    <button onclick="switchTab('logs')" class="tab-button" data-tab="logs" id="logsTab" style="display: none;">
+                        <i class="fas fa-history mr-2"></i>System Logs
+                    </button>
+                    <button onclick="switchTab('profile')" class="tab-button" data-tab="profile">
+                        <i class="fas fa-user mr-2"></i>Profile
+                    </button>
                 </nav>
             </div>
 
@@ -79,7 +85,7 @@
                                 <option value="">All Courses</option>
                             </select>
                             <button onclick="refreshGrades()" class="btn-glass">
-                                <i class="fas fa-refresh mr-2"></i>Refresh
+                                <i class="fas fa-rotate-right mr-2"></i>Refresh
                             </button>
                         </div>
                     </div>
@@ -148,6 +154,32 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- System Logs Tab -->
+                <div id="logs-tab" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">System Activity Log</h2>
+                        <button onclick="refreshLogs()" class="btn-glass bg-blue-600 text-white hover:bg-blue-700">
+                            <i class="fas fa-refresh mr-2"></i>Refresh
+                        </button>
+                    </div>
+                    <div id="systemLogs" class="space-y-4">
+                        <!-- System logs will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Profile Tab -->
+                <div id="profile-tab" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-900">Profile Management</h2>
+                        <button onclick="editProfile()" class="btn-glass bg-green-600 text-white hover:bg-green-700">
+                            <i class="fas fa-edit mr-2"></i>Edit Profile
+                        </button>
+                    </div>
+                    <div id="profileContent" class="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+                        <!-- Profile content will be populated here -->
                     </div>
                 </div>
             </div>
@@ -259,7 +291,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="app.js"></script>
+    <script src="api.js"></script>
     <script src="academic-management.js"></script>
 </body>
 </html>

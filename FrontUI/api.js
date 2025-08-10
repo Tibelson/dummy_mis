@@ -51,6 +51,7 @@ const api = {
   async createCourse(courseData) { return await this.request('/admin/courses', { method: 'POST', body: JSON.stringify(courseData) }); },
   async updateCourse(id, courseData) { return await this.request(`/admin/courses/${id}`, { method: 'PUT', body: JSON.stringify(courseData) }); },
   async deleteCourse(id) { return await this.request(`/admin/courses/${id}`, { method: 'DELETE' }); },
+  async getDashboardStats() { return await this.request('/admin/dashboard/stats', { method: 'GET' }); },
 
   // Students
   async getStudents() { return await this.request('/students', { method: 'GET' }); },
@@ -66,6 +67,8 @@ const api = {
   async updateLecturer(id, lecturerData) { return await this.request(`/lecturers/${id}`, { method: 'PUT', body: JSON.stringify(lecturerData) }); },
   async deleteLecturer(id) { return await this.request(`/lecturers/${id}`, { method: 'DELETE' }); },
   async getLecturerCourses(lecturerId) { return await this.request(`/lecturers/${lecturerId}/courses`, { method: 'GET' }); },
+  async assignLecturerToCourse(courseId, lecturerId) { return await this.request(`/courses/${courseId}/assign-lecturer/${lecturerId}`, { method: 'PUT' }); },
+  async assignLecturerToCourseAdmin(courseId, lecturerId) { return await this.request(`/admin/courses/${courseId}/assign-lecturer/${lecturerId}`, { method: 'PUT' }); },
 
   // Enrollments
   async getEnrollments(studentId) { return await this.request(`/students/${studentId}/enrollments`, { method: 'GET' }); },

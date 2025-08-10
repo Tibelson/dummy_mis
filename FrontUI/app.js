@@ -281,18 +281,20 @@ const ui = {
     },
 
     showSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.section').forEach(section => {
-            section.classList.add('hidden');
-        });
+        const sections = document.querySelectorAll('.section');
+        if (sections.length > 0) {
+            sections.forEach(section => section.classList.add('hidden'));
+        }
 
-        // Show selected section
-        document.getElementById(sectionId).classList.remove('hidden');
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.classList.remove('hidden');
+        }
 
-        // Update navigation based on user role
+        // Update navigation based on user role (safe even if nav not present)
         ui.updateNavigation(sectionId);
 
-        // Load section data
+        // Load section data if applicable on this page
         this.loadSectionData(sectionId);
     },
 
@@ -1476,10 +1478,10 @@ ui.updateAuthUI = function() {
     const authButtons = document.getElementById('authButtons');
 
     if (currentUser) {
-        userMenu.classList.remove('hidden');
-        authButtons.classList.add('hidden');
+        if (userMenu) userMenu.classList.remove('hidden');
+        if (authButtons) authButtons.classList.add('hidden');
     } else {
-        userMenu.classList.add('hidden');
-        authButtons.classList.remove('hidden');
+        if (userMenu) userMenu.classList.add('hidden');
+        if (authButtons) authButtons.classList.remove('hidden');
     }
 };

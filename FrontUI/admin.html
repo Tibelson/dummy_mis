@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Portal - MIS Web</title>
   <link href="./dist/output.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="styles.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50">
@@ -36,7 +36,7 @@
     <section id="courses" class="section hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold">Manage Courses</h2>
-        <button class="btn-primary" onclick="openAddCourse()"><i class="fas fa-plus mr-2"></i>Add Course</button>
+         <button class="btn-primary" onclick="openAddCourse()"><i class="fas fa-plus mr-2"></i><span>Add Course</span></button>
       </div>
       <div id="coursesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </section>
@@ -44,7 +44,7 @@
     <section id="students" class="section hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold">Manage Students</h2>
-        <button class="btn-primary" onclick="openAddStudent()"><i class="fas fa-plus mr-2"></i>Add Student</button>
+         <button class="btn-primary" onclick="openAddStudent()"><i class="fas fa-plus mr-2"></i><span>Add Student</span></button>
       </div>
       <div id="studentsList" class="space-y-3"></div>
     </section>
@@ -52,7 +52,7 @@
     <section id="lecturers" class="section hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold">Manage Lecturers</h2>
-        <button class="btn-primary" onclick="openAddLecturer()"><i class="fas fa-plus mr-2"></i>Add Lecturer</button>
+         <button class="btn-primary" onclick="openAddLecturer()"><i class="fas fa-plus mr-2"></i><span>Add Lecturer</span></button>
       </div>
       <div id="lecturersList" class="space-y-3"></div>
     </section>
@@ -60,7 +60,7 @@
     <section id="enrollments" class="section hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-2xl font-semibold">Manage Enrollments</h2>
-        <button class="btn-primary" onclick="openAddEnrollment()"><i class="fas fa-plus mr-2"></i>Add Enrollment</button>
+         <button class="btn-primary" onclick="openAddEnrollment()"><i class="fas fa-plus mr-2"></i><span>Add Enrollment</span></button>
       </div>
       <div id="enrollmentsList" class="space-y-3"></div>
     </section>

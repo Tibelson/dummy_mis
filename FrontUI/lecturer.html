@@ -53,23 +53,34 @@
     </section>
   </main>
 
-      <script src="api.js"></script>
-    <script>
+  <script src="api.js"></script>
+  <script>
+    let state = { courses: [] };
         // Check authentication
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const userRole = localStorage.getItem('userRole');
-        
-        if (!userRole || userRole !== 'LECTURER') {
-            alert('Access denied. Please login as a lecturer.');
-            window.location.href = 'login.html';
-        }
-        
-        const state = { lecturerId: user.lecturerId, courses: [] };
+        let currentUser = null;
+        let courses = [];
+        let students = [];
+        let enrollments = [];
+        let authToken = localStorage.getItem('token');
+
+        function checkAuth() {
+      const token = localStorage.getItem('token');
+      const userRole = localStorage.getItem('userRole');
+      
+      if (!token || userRole !== 'LECTURER') {
+        window.location.href = 'home.html';
+        return;
+      }
+      
+      currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+      authToken = token;
+    }
 
     function hideAll(){ document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden')); }
     function showSection(id){ hideAll(); document.getElementById(id).classList.remove('hidden'); }
 
     async function init(){
+      checkAuth();
       const user = JSON.parse(localStorage.getItem('user')||'null');
       state.lecturerId = user?.id || 1;
 

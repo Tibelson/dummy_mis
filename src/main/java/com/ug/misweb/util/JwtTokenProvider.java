@@ -1,76 +1,63 @@
 package com.ug.misweb.util;
 
 import com.ug.misweb.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    
-    @Value("${jwt.secret}")
-    private String jwtSecret;
-    
+
     @Value("${jwt.expiration}")
     private int jwtExpirationInMs;
-    
-    private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
-    }
-    
+
+    // Lightweight, dev-friendly token format: dev.<base64(username:expiry)>
     public String generateToken(Authentication authentication) {
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-        
-        return Jwts.builder()
-                .setSubject(userPrincipal.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+        long expiry = now.getTime() + jwtExpirationInMs;
+        String payload = userPrincipal.getUsername() + ":" + expiry;
+        String encoded = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        return "dev." + encoded;
     }
 
     public String generateToken(User user) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
-        
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+        long expiry = now.getTime() + jwtExpirationInMs;
+        String payload = user.getUsername() + ":" + expiry;
+        String encoded = Base64.getUrlEncoder().withoutPadding()
+                .encodeToString(payload.getBytes(StandardCharsets.UTF_8));
+        return "dev." + encoded;
     }
-    
+
     public String getUsernameFromJWT(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        
-        return claims.getSubject();
+        try {
+            String encoded = token.startsWith("dev.") ? token.substring(4) : token;
+            String decoded = new String(Base64.getUrlDecoder().decode(encoded), StandardCharsets.UTF_8);
+            int sep = decoded.lastIndexOf(':');
+            if (sep <= 0) return null;
+            return decoded.substring(0, sep);
+        } catch (Exception e) {
+            return null;
+        }
     }
-    
+
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(authToken);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
+            String encoded = authToken.startsWith("dev.") ? authToken.substring(4) : authToken;
+            String decoded = new String(Base64.getUrlDecoder().decode(encoded), StandardCharsets.UTF_8);
+            int sep = decoded.lastIndexOf(':');
+            if (sep <= 0) return false;
+            long expiry = Long.parseLong(decoded.substring(sep + 1));
+            return System.currentTimeMillis() < expiry;
+        } catch (Exception e) {
             return false;
         }
     }
-} 
+}

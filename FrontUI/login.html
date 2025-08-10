@@ -144,20 +144,8 @@
                 
                 // Redirect after a short delay
                 setTimeout(() => {
-                    switch (response.userDetails.role) {
-                        case 'STUDENT':
-                            window.location.href = 'student.html';
-                            break;
-                        case 'LECTURER':
-                            window.location.href = 'lecturer.html';
-                            break;
-                        case 'ADMIN':
-                            window.location.href = 'admin.html';
-                            break;
-                        default:
-                            throw new Error('Unknown role');
-                    }
-                }, 1500);
+                    window.location.href = 'dashboard-unified.html';
+                }, 1200);
                 
             } catch (error) {
                 console.error('Login error:', error);
